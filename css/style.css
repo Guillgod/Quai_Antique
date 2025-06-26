@@ -1,0 +1,1020 @@
+/* Reset CSS universel */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font: inherit;
+    color: inherit;
+    line-height: inherit;
+}
+
+html, body {
+    height: 100%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background: #fff;
+}
+
+/* Retirer les décorations des liens */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Listes sans puce par défaut */
+ul, ol {
+    list-style: none;
+}
+
+/* Images responsive sans bordure */
+img {
+    max-width: 100%;
+    height: auto;
+    border: 0;
+    display: block;
+}
+
+/* Supprimer la bordure bleue des boutons en focus sur Chrome */
+button, input, textarea, select {
+    outline: none;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 3000;
+}
+
+.header_content {
+    background: #bf902b;
+    padding: 0.5em 2em;
+    width: 100%;
+    box-sizing: border-box;
+}
+.burger-btn {
+    width: 56px;              /* plus large */
+    height: 50px;             /* carré, assez gros */
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;                 /* espace entre barres */
+    cursor: pointer;
+    margin-left: 0px;
+    margin-top: 5px;
+    position: relative;
+    z-index: 1010;
+    padding: 0;
+}
+
+.burger-bar {
+    display: block;
+    width: 38px;              /* longueur des barres */
+    height: 3px;              /* épaisseur des barres */
+    background-color: #fff;   /* couleur blanche */
+    border-radius: 3px;
+    transition: 0.3s;
+     
+}
+.menu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;          /* FIXED = toute la fenêtre */
+    top: 0;
+    left: 0;
+    width: 250px;             /* Largeur du bandeau */
+    height: 100vh;            /* Prend toute la hauteur */
+    background: #fff;
+    border-right: 1px solid #eee;
+    box-shadow: 2px 0 20px rgba(0,0,0,0.12);
+    z-index: 2000;
+    padding: 40px 20px 20px 20px;
+    text-align: left;
+    transform: translateX(-100%); /* caché à gauche par défaut */
+    transition: transform 0.35s cubic-bezier(.4,0,.2,1); /* animation douce */
+    display: block;           /* Toujours block, on joue sur transform */
+}
+
+.menu.open {
+    transform: translateX(0); /* Affiché, rentre à gauche */
+}
+
+.menu li {
+    margin: 18px 0;
+}
+.menu a {
+    color: #bf902b;
+    text-decoration: none;
+    font-size: 1.2em;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.menu a:hover {
+    color: #6b550f;
+    text-decoration: underline;
+}
+.close-btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 2em;
+    color: #bf902b;
+    cursor: pointer;
+    z-index: 2010;
+    transition: color 0.15s;
+}
+.close-btn:hover {
+    color: #6b550f;
+}
+
+.fond {
+    position: relative;
+    min-height: 100vh;
+    padding: 90px 20px 20px 20px;  /* padding-top égal à la hauteur du header */
+    background: url('../upload/photocover.jpg') center center/cover no-repeat;
+    z-index: 1;
+    overflow: hidden;
+
+    /* Ajout pour centrer le contenu */
+    display: flex;
+    flex-direction: column;
+    align-items: center;          /* centre horizontalement */
+    justify-content: center;      /* centre verticalement */
+}
+
+/* Overlay noir transparent */
+.fond::before {
+    content: "";
+    position: absolute;
+    inset: 0; /* top:0; right:0; bottom:0; left:0 */
+    background: rgba(0,0,0,0.65); /* Ajuste l’opacité ici (0.5=50%) */
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Le contenu de .fond doit être au-dessus de l’overlay */
+.fond > * {
+    position: relative;
+    z-index: 3;
+}
+
+/* Style du texte centré, améliore la lisibilité */
+.fond h1 {
+    color: #bf902b;
+    font-size: 4em;
+    letter-spacing: 2px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.7), 0 1px 1px #000;
+    margin: 0;
+    text-align: center;
+}
+
+.fond p {
+    font-weight: normal;
+    color: #fff;
+    font-size: 1.1em;
+    text-align: justify;
+    text-align-last: center;
+    max-width: 750px; /* Limite la largeur pour une meilleure lisibilité */
+    margin-top: 20px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);}
+
+
+/*Container pour le contenu principal*/
+.container {
+    position: relative; /* pour placer les barres en absolu dedans */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 350px; /* adapte la hauteur selon besoin */
+    margin: 0;
+    width: 100%;
+    background: none;
+}
+
+.container::before,
+.container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #ccc;
+    border-radius: 6px;
+    z-index: 0;
+}
+
+.container::before {
+    left: calc(50% - 480px); /* Place la barre à gauche du bloc (900px/2 + padding) */
+}
+.container::after {
+    right: calc(50% - 480px);
+}
+
+.container-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 900px;
+    width: 100%;
+    padding: 40px 32px;
+    background: #fff;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+
+
+.container-content h2 {
+    text-align: center;
+    color: #000000;
+    font-size: 2em;
+    margin-bottom: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.container-content p {
+    text-align: justify;
+    text-align-last: center;
+    color: #252020;
+    font-size: 1.1em;
+    font-weight: normal;
+    max-width: 700px;
+}
+
+/* Menu Cover */
+.menu-cover {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    height: 250px;
+    margin: 40px auto 0 auto;
+    background: url('../upload/photo_menu.jpg') center center/cover no-repeat;
+    
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.menu-cover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5); /* Overlay sombre comme dans le header */
+    z-index: 1;
+}
+
+.menu-title {
+    position: relative;
+    z-index: 2;
+    color: #fff;
+    font-size: 2em;
+    font-weight: bold;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    text-align: center;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.7), 0 1px 1px #000;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    padding: 0 20px;
+    text-decoration: none;       /* retire soulignement par défaut */
+    cursor: pointer;
+    transition: text-decoration 0.2s, color 0.2s;
+    outline: none;               /* évite l'outline bleu sur clic */
+}
+.menu-title:hover {
+    color: #bf902b;
+    text-decoration: underline;
+}
+
+/* Styles pour les créations images */
+.creation-image {
+    display: block;
+    width: 100%;
+    height: 268px;
+    margin: 0;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+    object-fit: cover;
+    transition: transform 0.2s;
+    max-width: 100%;
+}
+.creation-image:hover {
+    transform: scale(1.03);
+}
+
+@media (max-width: 600px) {
+    .creation-large, .creation-medium, .creation-small {
+        width: 95vw !important;
+        max-width: 95vw;
+    }
+}
+
+.creation-gallery {
+    display: flex;
+    gap: 20px;
+    flex-direction: column; /* par défaut en colonne */
+    justify-content: center;
+    margin: 40px 0;
+}
+@media (max-width: 800px) {
+    .creation-gallery {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+.container-content2 h2 {
+    text-align: center;
+    color: #000000;
+    font-size: 2em;
+    margin-bottom: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.container-content2 p {
+    text-align: justify;
+    text-align-last: center;
+    color: #252020;
+    font-size: 1.1em;
+    font-weight: normal;
+    max-width: 700px;
+    margin: 0 auto 18px auto;
+}
+
+.creation-gallery2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px 20px;
+    justify-items: center;
+    width: 100%;
+    max-width: 900px;
+    margin: 40px auto;
+    box-sizing: border-box;
+}
+
+
+
+.creation-img-wrapper {
+    position: relative;
+    display: flex;         /* flex pour garder l'image centrée et remplir la div */
+    align-items: flex-start;
+    justify-content: flex-start;
+    max-width: 100%;
+    width: 350px;          /* largeur par défaut, adapte selon ton besoin ou enlève si tu veux 100% */
+    min-width: 0;
+    overflow: hidden;      /* important pour les overlays */
+    margin: 0 10px;
+}
+
+.creation-alt {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(0,0,0,0.68);
+    color: #fff;
+    padding: 8px 18px 8px 12px;
+    
+    font-size: 1em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.20s;
+    z-index: 5;
+    max-width: 80%;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+    font-weight: 500;
+    text-align: left;
+    white-space: normal;
+    /* pour éviter que la bulle ne dépasse l'image */
+    overflow-wrap: break-word;
+}
+
+.creation-img-wrapper:hover .creation-alt {
+    opacity: 1;
+}
+
+/* Styles pour les images de la gallerie */
+.creation-gallery2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px 20px;
+    justify-items: center;
+    width: 1100px;         /* 3*350+2*20 */
+    max-width: 98vw;
+    margin: 40px auto;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1100px) {
+    .creation-gallery2 {
+        grid-template-columns: repeat(2, 1fr);
+        width: 720px;        /* 2*350+1*20 */
+        max-width: 95vw;
+    }
+}
+@media (max-width: 768px) {
+    .creation-gallery2 {
+        grid-template-columns: 1fr;
+        width: 350px;
+        max-width: 98vw;
+    }
+}
+/* Footer */
+/* footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: black;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 0.9em;
+    position: relative;
+    z-index: 1000;
+}
+
+footer h2 {
+    font-size: 2em;
+    color : #bf902b;
+    margin-bottom: 10px;
+}
+
+footer p {
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+footer a {
+    color: #bf902b;
+    text-decoration: none;
+    transition: color 0.2s;
+     
+}
+footer a:hover {
+    color: #6b550f;
+    text-decoration: underline;
+} */
+
+footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: black;
+    color: #fff;
+    padding: 30px 0 15px 0;
+    text-align: center;
+    font-size: 0.98em;
+    position: relative;
+    z-index: 1000;
+}
+
+.footer_content {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+footer h2 {
+    font-size: 2em;
+    color: #bf902b;
+    margin: 24px 0 14px 0; /* espace au-dessus et au-dessous */
+}
+
+.footer-hours,
+.footer-contact {
+    margin-bottom: 20px;
+}
+
+footer p {
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+.footer-contact p {
+    margin: 7px 0;
+    font-weight: normal;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    
+    margin: 30px 0 15px 0;
+    padding: 0;
+}
+
+.footer-links li {
+    display: table-column;
+}
+
+footer a {
+    color: #bf902b;
+    text-decoration: underline;
+    transition: color 0.2s;
+    font-weight: normal;
+    font-size: 1em;
+    margin: 0 4px;
+}
+footer a:hover {
+    color: #6b550f;
+    text-decoration: underline;
+}
+
+.footer-copy {
+    font-weight: normal;
+    font-size: 0.9em;
+    margin-top: 10px;
+    margin-bottom: 0;
+    opacity: 0.8;
+}
+
+/* Page Notre Carte */
+
+.container_carte {
+    position: relative; /* pour placer les barres en absolu dedans */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 350px; /* adapte la hauteur selon besoin */
+    margin: 0;
+    width: 100%;
+    background: none;
+}
+
+.container_carte::before,
+.container_carte::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #ccc;
+    border-radius: 6px;
+    z-index: 0;
+}
+
+.container_carte::before {
+    left: calc(50% - 480px); /* Place la barre à gauche du bloc (900px/2 + padding) */
+}
+.container_carte::after {
+    right: calc(50% - 480px);
+}
+
+.container_carte-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 900px;
+    width: 100%;
+    padding: 40px 32px;
+    background: #fff;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+
+
+.container_carte-content h2 {
+    text-align: center;
+    color: #bf902b;
+    font-size: 2em;
+    margin-bottom: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.container_carte-content h3 {
+    text-align: center;
+    color: black;
+    font-size: 1.3em;
+    margin-bottom: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.container_carte-content p {
+    text-align: justify;
+    color: #252020;
+    font-size: 1.1em;
+    font-weight: normal;
+    max-width: 700px;
+}
+
+.fond2 {
+    position: relative;
+    min-height: 100vh;
+    padding: 90px 20px 20px 20px;  /* padding-top égal à la hauteur du header */
+    background: url('../upload/photo_carte.jpg') center center/cover no-repeat;
+    z-index: 1;
+    overflow: hidden;
+
+    /* Ajout pour centrer le contenu */
+    display: flex;
+    flex-direction: column;
+    align-items: center;          /* centre horizontalement */
+    justify-content: center;      /* centre verticalement */
+}
+
+/* Overlay noir transparent */
+.fond2::before {
+    content: "";
+    position: absolute;
+    inset: 0; /* top:0; right:0; bottom:0; left:0 */
+    background: rgba(0,0,0,0.65); /* Ajuste l’opacité ici (0.5=50%) */
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Le contenu de .fond doit être au-dessus de l’overlay */
+.fond2 > * {
+    position: relative;
+    z-index: 3;
+}
+
+/* Style du texte centré, améliore la lisibilité */
+.fond2 h1 {
+    color: #bf902b;
+    font-size: 4em;
+    letter-spacing: 2px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.7), 0 1px 1px #000;
+    margin: 0;
+    text-align: center;
+}
+
+.fond2 p {
+    font-weight: normal;
+    color: #fff;
+    font-size: 1.1em;
+    text-align: justify;
+    text-align-last: center;
+    max-width: 750px; /* Limite la largeur pour une meilleure lisibilité */
+    margin-top: 20px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);}
+
+
+/* Page création de comptes & LOGIN*/
+
+
+.container_creer_compte {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    background: #fff;
+}
+
+.container_creer_compte2{
+    min-height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    background: #fff;
+}
+
+
+.container_creer_compte-content {
+    width: 100%;
+    max-width: 480px;
+    margin: 70px auto 30px auto;
+    background: #fff;
+    border-radius: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 36px 0 44px 0;
+    position: relative;
+}
+
+/* Barres verticales */
+.container_creer_compte::before,
+.container_creer_compte::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #e4e4e4;
+    z-index: 1;
+}
+
+/* Barres verticales pour login */
+.container_creer_compte2::before,
+.container_creer_compte2::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #e4e4e4;
+    z-index: 1;
+}
+
+
+.container_creer_compte::before {
+    left: 29%;
+}
+.container_creer_compte::after {
+    right: 29%;
+}
+
+.container_creer_compte2::before {
+    left: 29%;
+}
+.container_creer_compte2::after {
+    right: 29%;
+}
+
+.container_creer_compte-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.7em;
+    text-align: center;
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.instructions {
+    text-align: left;
+    font-size: 0.8em;
+    color: #7a7a7a;
+    margin-bottom: 20px;
+    margin-top: 0;
+    font-style: italic;
+    max-width: 1000px;
+    align-self: flex-start;
+}
+
+/* Formulaire */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.container_creer_compte2 a {
+    color: #bf902b;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9em;
+    margin-top: 5px;
+    text-align: center;
+}
+.container_creer_compte2 p {
+    color: #262626;
+    text-align:center;
+    font-size: 0.9em;
+}
+
+.compte {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+label {
+    font-size: 1.06em;
+    color: #262626;
+    font-weight: 400;
+    margin-bottom: 5px;
+    margin-top: 0;
+    text-align: left;
+    letter-spacing: .02em;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+select {
+    background: transparent;
+    border: none;
+    border-bottom: 1.3px solid #bdbdbd;
+    padding: 11px 3px 7px 0;
+    font-size: 1.12em;
+    color: #252020;
+    transition: border-color 0.2s;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-bottom: 1.6px solid #bf902b;
+}
+
+small {
+    font-size: 0.93em;
+    color: #a5a5a5;
+    margin-top: -8px;
+    margin-bottom: 10px;
+    display: block;
+    text-align: left;
+}
+
+/* Radios */
+.label-radio {
+    margin-bottom: 6px;
+    font-weight: 400;
+}
+.radio-group {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 8px;
+    margin-top: -8px;
+}
+.radio-group label {
+    font-weight: 400;
+    font-size: 1em;
+    color: #333;
+    cursor: pointer;
+}
+input[type="radio"] {
+    accent-color: #bf902b;
+    margin-right: 6px;
+}
+
+.submit-btn {
+    background: #05060b;
+    color: #fff;
+    border: none;
+    padding: 11px 34px;
+    border-radius: 1px;
+    font-size: 1.08em;
+    font-family: inherit;
+    font-weight: 400;
+    margin: 30px auto 0 auto;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 2px;
+    display: flex;                 /* Flexbox pour centrage */
+    justify-content: center;       /* Centre horizontalement */
+    align-items: center;           /* Centre verticalement */
+    width: 160px;
+    height: 46px;                  /* Ajoute une hauteur fixe */
+    min-height: 44px;              /* Pour la réactivité */
+}
+.submit-btn:hover {
+    background: #bf902b;
+    color: #fff;
+}
+
+.container_creer_compte2 a:hover {
+    color: #6b550f;
+    text-decoration: underline;
+}
+
+@media (max-width: 1150px) {
+    .container_creer_compte::before,
+    .container_creer_compte::after,
+    .container_creer_compte2::before,
+    .container_creer_compte2::after {
+        display: none;
+    }
+    .container_creer_compte-content {
+        max-width: 97vw;
+        padding: 18px 0;
+    }
+}
+
+@media (max-width: 550px) {
+    .container_creer_compte-content h2 {
+        font-size: 2em;
+    }
+}
+
+
+
+
+
+
+.fond3 {
+    position: relative;
+    min-height: 100vh;
+    padding: 90px 20px 20px 20px;  /* padding-top égal à la hauteur du header */
+    background: url('../upload/photo_creer_compte.jpg') center center/cover no-repeat;
+    z-index: 1;
+    overflow: hidden;
+
+    /* Ajout pour centrer le contenu */
+    display: flex;
+    flex-direction: column;
+    align-items: center;          /* centre horizontalement */
+    justify-content: center;      /* centre verticalement */
+}
+
+/* Overlay noir transparent */
+.fond3::before {
+    content: "";
+    position: absolute;
+    inset: 0; /* top:0; right:0; bottom:0; left:0 */
+    background: rgba(0,0,0,0.65); /* Ajuste l’opacité ici (0.5=50%) */
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Le contenu de .fond doit être au-dessus de l’overlay */
+.fond3 > * {
+    position: relative;
+    z-index: 3;
+}
+
+/* Style du texte centré, améliore la lisibilité */
+.fond3 h1 {
+    color: #bf902b;
+    font-size: 3em;
+    letter-spacing: 2px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.7), 0 1px 1px #000;
+    margin: 0;
+    text-align: center;
+}
+
+.fond3 p {
+    font-weight: normal;
+    color: #fff;
+    font-size: 1.1em;
+    text-align: justify;
+    text-align-last: center;
+    max-width: 750px; /* Limite la largeur pour une meilleure lisibilité */
+    margin-top: 20px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);}
+
+/* Photo acceuil page Gallery */
+.fond4 {
+    position: relative;
+    min-height: 50vh;
+    padding: 90px 20px 20px 20px;  /* padding-top égal à la hauteur du header */
+    background: url('../upload/photo_creer_compte.jpg') center center/cover no-repeat;
+    z-index: 1;
+    overflow: hidden;
+
+    /* Ajout pour centrer le contenu */
+    display: flex;
+    flex-direction: column;
+    align-items: center;          /* centre horizontalement */
+    justify-content: center;      /* centre verticalement */
+    margin-bottom: 30px;
+}
+
+/* Overlay noir transparent */
+.fond4::before {
+    content: "";
+    position: absolute;
+    inset: 0; /* top:0; right:0; bottom:0; left:0 */
+    background: rgba(0,0,0,0.65); /* Ajuste l’opacité ici (0.5=50%) */
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Le contenu de .fond doit être au-dessus de l’overlay */
+.fond4 > * {
+    position: relative;
+    z-index: 3;
+}
+
+/* Style du texte centré, améliore la lisibilité */
+.fond4 h1 {
+    color: #bf902b;
+    font-size: 3em;
+    letter-spacing: 2px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.7), 0 1px 1px #000;
+    margin: 0;
+    text-align: center;
+}
+
+.fond4 p {
+    font-weight: normal;
+    color: #fff;
+    font-size: 1.1em;
+    text-align: justify;
+    max-width: 700px; /* Limite la largeur pour une meilleure lisibilité */
+    margin-top: 20px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);}
