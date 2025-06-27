@@ -1,3 +1,7 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
     <head>
@@ -21,7 +25,16 @@
                     <li><a href="../views/notre_carte.php">Notre carte</a></li>
                     <li><a href="../views/gallerie.php">Galerie</a></li>
                     <li><a href="../views/reservation.php">Réserver une table</a></li>
-                    <li><a href="../views/login.php">Se connecter</a></li>
+                    <?php if(isset($_SESSION['user'])): ?>
+                        <li><a href="../views/user_space.php">Mon compte</a></li>
+                    <?php endif; ?>
+
+                    <?php if (!isset($_SESSION['user'])): ?>
+                        <li><a href="../views/login.php">Se connecter</a></li>
+                    <?php else: ?>
+                        <li><a href="../controllers/logout.php">Déconnexion</a></li>
+                    <?php endif; ?>
+                    
                     <?php if(isset($_SESSION['user']) && $_SESSION['user']['is_admin'] == 1): ?>
                         <li><a href="#">Admin</a></li>
                     <?php endif; ?>

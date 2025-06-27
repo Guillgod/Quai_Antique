@@ -9,12 +9,13 @@ class LoginController {
         $user = $userModel->verifyLogin($email, $password);
 
         if ($user) {
-            // Connexion OK : on démarre la session
             session_start();
-            $_SESSION['user_id'] = $user['id_utilisateur'];
-            $_SESSION['user_email'] = $user['email'];
-            $_SESSION['user_nom'] = $user['nom'];
-            // Redirection ou affichage d’un message de bienvenue
+            $_SESSION['user'] = [
+                'id_utilisateur' => $user['id_utilisateur'],
+                'email' => $user['email'],
+                'nom' => $user['nom'],
+                'is_admin' => $user['is_admin'] ?? 0, // Ajoute is_admin si tu l'as
+            ];
             header('Location: ../views/Page_accueil.php');
             exit();
         } else {
