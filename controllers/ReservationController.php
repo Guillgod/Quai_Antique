@@ -16,7 +16,7 @@ class ReservationController {
         $user_id = $_SESSION['user']['id_users'];
         $reservation_date = $data['date'] ?? '';
         $service = $data['service'] ?? '';
-        $reservation_heure = ($service === 'midi') ? '12:00:00' : '19:30:00'; // Adapte selon ton besoin
+        $reservation_heure = $data['horaire'] ?? '';
         $couvert = $data['couvert'] ?? 2;
         $allergies = isset($data['allergies']) ? $data['allergies'] : [];
         // Insertion réservation

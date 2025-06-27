@@ -99,6 +99,13 @@ $date_aujourdhui = date('Y-m-d');
                             Non
                         </label>
                     </div>
+                <!-- Sélection horaire -->
+                    <div id="select-horaire-container" style="display:none;">
+                        <label for="horaire">Horaire de réservation</label>
+                        <select id="horaire" name="horaire"></select>
+                    </div>
+
+                    
                 <!-- Liste des allergies -->
                     <div class="liste-allergies" id="liste-allergies"
                         style="margin-top:10px;<?= (!empty($userAllergies)) ? '' : 'display:none;' ?>">
@@ -160,6 +167,50 @@ $date_aujourdhui = date('Y-m-d');
             // Init au chargement (utile si "Oui" pré-coché)
             updateAllergiesList();
         });
+
+
+        // Affiche le sélecteur horaire selon le service choisi
+        
+        function getSelectedService() {
+            return document.querySelector('input[name="service"]:checked').value;
+        }
+
+        function fetchTimeSlots() {
+            const date = document.getElementById('date').value;
+            const service = getSelectedService();
+            if (!date) return;
+
+            fetch('../controllers/get_timeslots.php?date=' + encodeURIComponent(date) + '&service=' + encodeURIComponent(service))
+            .then(response => response.json())
+            .then(times => {
+                const selectHoraire = document.getElementById('horaire');
+                selectHoraire.innerHTML = '';
+
+                if (times.length > 0) {
+                    times.forEach(function(h){
+                        const opt = document.createElement('option');
+                        opt.value = h;
+                        opt.textContent = h;
+                        selectHoraire.appendChild(opt);
+                    });
+                    document.getElementById('select-horaire-container').style.display = 'block';
+                } else {
+                    selectHoraire.innerHTML = '';
+                    document.getElementById('select-horaire-container').style.display = 'none';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Affiche au chargement
+            fetchTimeSlots();
+
+            document.getElementById('date').addEventListener('change', fetchTimeSlots);
+            document.querySelectorAll('input[name="service"]').forEach(radio => {
+                radio.addEventListener('change', fetchTimeSlots);
+            });
+        });
+
         </script>
     </body>
 </html>
