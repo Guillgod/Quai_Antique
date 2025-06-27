@@ -1,3 +1,20 @@
+<?php
+session_start();
+require_once '../controllers/LoginController.php';
+
+$message = "";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST['email'] ?? '';
+    $mdp = $_POST['mdp'] ?? '';
+    $controller = new LoginController();
+    $message = $controller->login($email, $mdp);
+}
+?>
+
+
+
+
+
 <!DOCTYPE <!DOCTYPE html>
 <html lang="fr">
     <head>
@@ -10,12 +27,11 @@
         <?php require_once 'header.php';?>
          
         
+
         <section class="container_creer_compte2">
             <div class="container_creer_compte-content">
                 <h2>SE CONNECTER</h2>
-                <p class="instructions">
-                Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial
-                </p>
+                
                 <form action="login.php" method="post" autocomplete="off">
 
                 <input type="email" id="email" name="email" placeholder="E-mail" required>
@@ -25,7 +41,10 @@
                 <p>Vous n'avez pas de compte ? </p>
                 <a href="creation_compte.php" class="link">Créez-en un ici !</a>
                 </div>
-
+                <!-- Affiche un message d’erreur s’il existe -->
+                    <?php if ($message): ?>
+                        <div class="message_erreur"><?php echo $message; ?></div>
+                    <?php endif; ?>
                 <button type="submit" class="submit-btn">VALIDER</button>
                 </form>
             </div>

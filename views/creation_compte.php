@@ -34,8 +34,8 @@
                 <input type="tel" id="tel" name="tel" placeholder="Téléphone" pattern="[0-9]{10}">
                 <small>Format : 0102030405</small>
 
-                <label for="couvert">Nombres de couverts par défaut</label>
-                <select id="couvert" name="couvert">
+                <label for="nb_persons">Nombres de couverts par défaut</label>
+                <select id="nb_persons" name="nb_persons">
                     <option value="1">1</option>
                     <option value="2" selected>2</option>
                     <option value="3">3</option>

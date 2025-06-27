@@ -66,7 +66,22 @@ $date_aujourdhui = date('Y-m-d');
                     <label><input type="radio" name="allergie" value="oui"> Oui</label>
                     <label><input type="radio" name="allergie" value="non" checked> Non</label>
                 </div>
-                
+                <div class="liste-allergies" id="liste-allergies" style="display:none; margin-top: 10px;">
+                    <label><input type="checkbox" name="allergies[]" value="Arachide"> Arachide</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Céleri"> Céleri</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Crustacés"> Crustacés</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Fruits à coques"> Fruits à coques</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Gluten"> Gluten</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Lactose"> Lactose</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Lupin"> Lupin</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Mollusque"> Mollusque</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Moutarde"> Moutarde</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Oeufs"> Oeufs</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Poissons"> Poissons</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Sésame"> Sésame</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Soja"> Soja</label><br>
+                    <label><input type="checkbox" name="allergies[]" value="Sulfites"> Sulfites</label>
+                </div>
                 <button type="submit" class="submit-btn">SOUMETTRE</button>
                 </form>
             </div>
@@ -77,6 +92,27 @@ $date_aujourdhui = date('Y-m-d');
 
         <?php require_once 'footer.php';?>
 
-        
+        <!-- Affiche la liste des allergies lorsque la radio allergie est = oui -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function updateAllergiesList() {
+                const allergiesOui = document.querySelector('input[name="allergie"][value="oui"]');
+                const listeAllergies = document.getElementById('liste-allergies');
+                if (allergiesOui.checked) {
+                    listeAllergies.style.display = "block";
+                } else {
+                    listeAllergies.style.display = "none";
+                    // Décoche tout quand caché (optionnel)
+                    listeAllergies.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false);
+                }
+            }
+            // Sur changement des radios
+            document.querySelectorAll('input[name="allergie"]').forEach(radio => {
+                radio.addEventListener('change', updateAllergiesList);
+            });
+            // Init au chargement (utile si "Oui" pré-coché)
+            updateAllergiesList();
+        });
+        </script>
     </body>
 </html>
