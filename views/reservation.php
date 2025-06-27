@@ -1,4 +1,31 @@
 <?php
+session_start();
+require_once '../controllers/ReservationController.php';
+
+$date_aujourdhui = date('Y-m-d');
+$defaultNbPersons = 2;
+$userAllergies = [];
+
+if (isset($_SESSION['user'])) {
+    $controller = new ReservationController();
+    $userData = $controller->getUserDefaultData();
+    if ($userData) {
+        $defaultNbPersons = $userData['nb_persons'];
+        $userAllergies = $userData['allergies']; // tableau de types d'allergie
+    }
+}
+
+// GESTION SOUMISSION FORMULAIRE
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller = new ReservationController();
+    $controller->submitReservation($_POST);
+}
+?>
+
+
+
+
+<?php
 $date_aujourdhui = date('Y-m-d');
 ?>
 
@@ -11,8 +38,8 @@ $date_aujourdhui = date('Y-m-d');
         <link href="css/style.css" rel="stylesheet">
     </head>
     <body>
-        <?php require_once 'header.php';?>
         
+        <?php require_once 'header.php';?>
         
         <section class="container_creer_compte">
             <div class="container_creer_compte-content">
@@ -20,21 +47,14 @@ $date_aujourdhui = date('Y-m-d');
                 <p class="instructions">
                 Pour réserver une table, remplissez ce formulaire.
                 </p>
-                <form action="creation_compte.php" method="post" autocomplete="off">
-                <input type="text" id="nom" name="nom" placeholder="Nom de famille" required>
-
-                <input type="text" id="prenom" name="prenom" placeholder="Prénom" required>
-
-                <input type="email" id="email" name="email" placeholder="E-mail" required>
-
-                <input type="tel" id="tel" name="tel" placeholder="Téléphone" pattern="[0-9]{10}">
-                <small>Format : 0102030405</small>
+                <form action="reservation.php" method="post" autocomplete="off">
+                
 
                 <p class="instructions">
                 Pour plus de 10 personnes, contactez-nous par téléphone.
                 </p>
                  <label for="couvert">Nombres de couverts</label>
-                <select id="couvert" name="couvert">
+                <!-- <select id="couvert" name="couvert">
                     <option value="1">1</option>
                     <option value="2" selected>2</option>
                     <option value="3">3</option>
@@ -45,6 +65,11 @@ $date_aujourdhui = date('Y-m-d');
                     <option value="8">8</option>
                     <option value="9">9</option>
                     <option value="10">10</option>
+                </select> -->
+                <select id="couvert" name="couvert">
+                    <?php for ($i = 1; $i <= 10; $i++): ?>
+                        <option value="<?= $i ?>" <?= ($i == $defaultNbPersons) ? 'selected' : '' ?>><?= $i ?></option>
+                    <?php endfor; ?>
                 </select>
 
                 <!-- Date de réservation -->
@@ -62,26 +87,36 @@ $date_aujourdhui = date('Y-m-d');
                
 
                 <label class="label-radio">Avez-vous des allergies à signaler ?</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="allergie" value="oui"> Oui</label>
-                    <label><input type="radio" name="allergie" value="non" checked> Non</label>
-                </div>
-                <div class="liste-allergies" id="liste-allergies" style="display:none; margin-top: 10px;">
-                    <label><input type="checkbox" name="allergies[]" value="Arachide"> Arachide</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Céleri"> Céleri</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Crustacés"> Crustacés</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Fruits à coques"> Fruits à coques</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Gluten"> Gluten</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Lactose"> Lactose</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Lupin"> Lupin</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Mollusque"> Mollusque</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Moutarde"> Moutarde</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Oeufs"> Oeufs</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Poissons"> Poissons</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Sésame"> Sésame</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Soja"> Soja</label><br>
-                    <label><input type="checkbox" name="allergies[]" value="Sulfites"> Sulfites</label>
-                </div>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="allergie" value="oui" 
+                                <?= (!empty($userAllergies)) ? 'checked' : '' ?>>
+                            Oui
+                        </label>
+                        <label>
+                            <input type="radio" name="allergie" value="non" 
+                                <?= (empty($userAllergies)) ? 'checked' : '' ?>>
+                            Non
+                        </label>
+                    </div>
+                <!-- Liste des allergies -->
+                    <div class="liste-allergies" id="liste-allergies"
+                        style="margin-top:10px;<?= (!empty($userAllergies)) ? '' : 'display:none;' ?>">
+                        <label><input type="checkbox" name="allergies[]" value="Arachide" <?= in_array('Arachide', $userAllergies) ? 'checked' : '' ?>> Arachide</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Céleri" <?= in_array('Céleri', $userAllergies) ? 'checked' : '' ?>> Céleri</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Crustacés" <?= in_array('Crustacés', $userAllergies) ? 'checked' : '' ?>> Crustacés</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Fruits à coques" <?= in_array('Fruits à coques', $userAllergies) ? 'checked' : '' ?>> Fruits à coques</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Gluten" <?= in_array('Gluten', $userAllergies) ? 'checked' : '' ?>> Gluten</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Lactose" <?= in_array('Lactose', $userAllergies) ? 'checked' : '' ?>> Lactose</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Lupin" <?= in_array('Lupin', $userAllergies) ? 'checked' : '' ?>> Lupin</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Mollusque" <?= in_array('Mollusque', $userAllergies) ? 'checked' : '' ?>> Mollusque</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Moutarde" <?= in_array('Moutarde', $userAllergies) ? 'checked' : '' ?>> Moutarde</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Oeufs" <?= in_array('Oeufs', $userAllergies) ? 'checked' : '' ?>> Oeufs</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Poissons" <?= in_array('Poissons', $userAllergies) ? 'checked' : '' ?>> Poissons</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Sésame" <?= in_array('Sésame', $userAllergies) ? 'checked' : '' ?>> Sésame</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Soja" <?= in_array('Soja', $userAllergies) ? 'checked' : '' ?>> Soja</label><br>
+                        <label><input type="checkbox" name="allergies[]" value="Sulfites" <?= in_array('Sulfites', $userAllergies) ? 'checked' : '' ?>> Sulfites</label>
+                    </div>
                 <button type="submit" class="submit-btn">SOUMETTRE</button>
                 </form>
             </div>
@@ -106,10 +141,22 @@ $date_aujourdhui = date('Y-m-d');
                     listeAllergies.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false);
                 }
             }
+
             // Sur changement des radios
             document.querySelectorAll('input[name="allergie"]').forEach(radio => {
                 radio.addEventListener('change', updateAllergiesList);
             });
+
+            // *** Toujours forcer l’affichage si une case est cochée (cas POST) ***
+            let anyChecked = false;
+            document.querySelectorAll('#liste-allergies input[type="checkbox"]').forEach(function(chk){
+                if(chk.checked) anyChecked = true;
+            });
+            if(anyChecked) {
+                document.querySelector('input[name="allergie"][value="oui"]').checked = true;
+                document.getElementById('liste-allergies').style.display = 'block';
+            }
+
             // Init au chargement (utile si "Oui" pré-coché)
             updateAllergiesList();
         });

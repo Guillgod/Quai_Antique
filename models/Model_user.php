@@ -82,6 +82,23 @@ class ModelUser {
             return $e->getMessage();
         }
     }
+
+
+// // Récupère les allergies d'un utilisateur par son ID
+public function getAllergiesByUserId($user_id) {
+    $sql = "SELECT type_allergie FROM allergie 
+            JOIN user_allergie ON user_allergie.allergie_id = allergie.id_allergie
+            WHERE user_allergie.user_id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([$user_id]);
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
 
-?>
+public function getUserById($user_id) {
+    $sql = "SELECT * FROM users WHERE id_users = :user_id LIMIT 1";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC); // Renvoie un tableau associatif ou false si non trouvé
+}
+}

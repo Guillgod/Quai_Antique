@@ -1,0 +1,1 @@
+<p>Votre réservation est confirmée</p>
