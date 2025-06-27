@@ -101,4 +101,65 @@ public function getUserById($user_id) {
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC); // Renvoie un tableau associatif ou false si non trouvé
 }
+
+
+// Met à jour les informations de l'utilisateur et gère les allergies ou leur modification. 
+public function updateUser($user_id, $prenom, $nom, $email, $password, $nb_persons, $tel, $allergies = [], $passwordIsAlreadyHashed = false) {
+    try {
+        $this->conn->beginTransaction();
+
+        // MAJ utilisateur
+        $sql = "UPDATE users SET prenom = :prenom, nom = :nom, email = :email, password = :password, nb_persons = :nb_persons, tel = :tel WHERE id_users = :user_id";
+        $stmt = $this->conn->prepare($sql);
+
+        // Hash le mot de passe uniquement si ce n’est PAS le hash déjà existant
+        $hashedPassword = $passwordIsAlreadyHashed ? $password : password_hash($password, PASSWORD_DEFAULT);
+
+        $stmt->bindValue(':prenom', $prenom);
+        $stmt->bindValue(':nom', $nom);
+        $stmt->bindValue(':email', $email);
+        $stmt->bindValue(':password', $hashedPassword);
+        $stmt->bindValue(':nb_persons', $nb_persons);
+        $stmt->bindValue(':tel', $tel);
+        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Supprimer les anciennes allergies
+        $sqlDelete = "DELETE FROM user_allergie WHERE user_id = :user_id";
+        $stmtDelete = $this->conn->prepare($sqlDelete);
+        $stmtDelete->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $stmtDelete->execute();
+
+        // Réinsérer les nouvelles allergies si il y en a
+        if (!empty($allergies)) {
+            $placeholders = [];
+            foreach ($allergies as $idx => $allergie) {
+                $placeholders[] = ":allergie_$idx";
+            }
+            $in = implode(',', $placeholders);
+            $sqlAllergies = "SELECT id_allergie FROM allergie WHERE type_allergie IN ($in)";
+            $stmtAllergies = $this->conn->prepare($sqlAllergies);
+            foreach ($allergies as $idx => $allergie) {
+                $stmtAllergies->bindValue(":allergie_$idx", $allergie, PDO::PARAM_STR);
+            }
+            $stmtAllergies->execute();
+            $ids = $stmtAllergies->fetchAll(PDO::FETCH_COLUMN);
+
+            foreach ($ids as $id_allergie) {
+                $sqlJointure = "INSERT INTO user_allergie (user_id, allergie_id) VALUES (:user_id, :allergie_id)";
+                $stmtJointure = $this->conn->prepare($sqlJointure);
+                $stmtJointure->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+                $stmtJointure->bindValue(':allergie_id', $id_allergie, PDO::PARAM_INT);
+                $stmtJointure->execute();
+            }
+        }
+
+        $this->conn->commit();
+        return true;
+    } catch (Exception $e) {
+        $this->conn->rollBack();
+        return $e->getMessage();
+    }
+}
+
 }

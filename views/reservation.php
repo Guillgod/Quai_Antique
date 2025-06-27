@@ -35,7 +35,7 @@ $date_aujourdhui = date('Y-m-d');
         <title>Réserver une table</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="css/style.css" rel="stylesheet">
+        <link href="../css/style.css" rel="stylesheet">
     </head>
     <body>
         
@@ -83,7 +83,11 @@ $date_aujourdhui = date('Y-m-d');
                     <label><input type="radio" name="service" value="midi" checked> Midi</label>
                     <label><input type="radio" name="service" value="soir"> Soir</label>
                 </div>
-
+                <!-- Sélection horaire -->
+                <div id="select-horaire-container" style="display:none;">
+                    <label for="horaire">Horaire de réservation</label>
+                    <select id="horaire" name="horaire"></select>
+                </div>
                
 
                 <label class="label-radio">Avez-vous des allergies à signaler ?</label>
@@ -99,11 +103,7 @@ $date_aujourdhui = date('Y-m-d');
                             Non
                         </label>
                     </div>
-                <!-- Sélection horaire -->
-                    <div id="select-horaire-container" style="display:none;">
-                        <label for="horaire">Horaire de réservation</label>
-                        <select id="horaire" name="horaire"></select>
-                    </div>
+                
 
                     
                 <!-- Liste des allergies -->
