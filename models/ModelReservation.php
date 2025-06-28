@@ -89,12 +89,27 @@ class ModelReservation {
 
 
 public function deleteReservationById($idResa, $user_id) {
-    // Sécurité : supprime seulement si ça appartient à ce user
-    $sql = "DELETE FROM reservations WHERE id_reservations = :id AND user_id = :user_id";
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bindValue(':id', $idResa, PDO::PARAM_INT);
-    $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-    $stmt->execute();
+    try {
+        $this->conn->beginTransaction();
+
+        // 1. Supprime d’abord les lignes dans la table de jointure
+        $sqlDelJointure = "DELETE FROM reservations_allergie WHERE id_reservation_allergie = :resa_id";
+        $stmtJointure = $this->conn->prepare($sqlDelJointure);
+        $stmtJointure->bindValue(':resa_id', $idResa, PDO::PARAM_INT);
+        $stmtJointure->execute();
+
+        // 2. Puis la réservation
+        $sqlDelResa = "DELETE FROM reservations WHERE id_reservations = :id AND user_id = :user_id";
+        $stmtResa = $this->conn->prepare($sqlDelResa);
+        $stmtResa->bindValue(':id', $idResa, PDO::PARAM_INT);
+        $stmtResa->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $stmtResa->execute();
+
+        $this->conn->commit();
+    } catch (Exception $e) {
+        $this->conn->rollBack();
+        throw $e;
+    }
 }
 
 public function getReservationById($idResa, $user_id) {

@@ -47,7 +47,7 @@ $date_aujourdhui = date('Y-m-d');
     </head>
     <body>
         
-        <?php require_once 'header.php';?>
+        <?php require_once '../views/header.php';?>
         
         <section class="container_creer_compte">
             <div class="container_creer_compte-content">

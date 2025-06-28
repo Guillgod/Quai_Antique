@@ -11,7 +11,6 @@ require_once '../models/ModelReservation.php';
 $modelReservation = new ModelReservation();
 $userReservations = $modelReservation->getReservationsByUserId($user_id);
 
-
 if (!$user_id) {
     header('Location: login.php');
     exit();
@@ -21,20 +20,25 @@ $modelUser = new ModelUser();
 $userData = $modelUser->getUserById($user_id);
 $userAllergies = $modelUser->getAllergiesByUserId($user_id);
 
+// Gère la suppression ou la modification d'une réservation OU la modification utilisateur
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller = new UserController();
-    $message = $controller->updateUserInfos($_POST, $user_id, $userData['password']);
-    // Recharge les infos après modif
-    $userData = $modelUser->getUserById($user_id);
-    $userAllergies = $modelUser->getAllergiesByUserId($user_id);
-}
-
-// Gère la suppression d'une réservation
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_resa'])) {
-    $idResa = (int)$_POST['delete_resa'];
-    $modelReservation->deleteReservationById($idResa, $user_id);
-    // Recharge les résas après suppression
-    $userReservations = $modelReservation->getReservationsByUserId($user_id);
+    // Suppression d'une réservation
+    if (isset($_POST['delete_resa'])) {
+        $idResa = (int)$_POST['delete_resa'];
+        $modelReservation->deleteReservationById($idResa, $user_id);
+        // Recharge les résas après suppression
+        $userReservations = $modelReservation->getReservationsByUserId($user_id);
+    }
+    // Modification d'utilisateur (uniquement si les champs existent)
+    elseif (
+        isset($_POST['prenom'], $_POST['nom'], $_POST['email'], $_POST['nb_persons'])
+    ) {
+        $controller = new UserController();
+        $message = $controller->updateUserInfos($_POST, $user_id, $userData['password']);
+        // Recharge les infos après modif
+        $userData = $modelUser->getUserById($user_id);
+        $userAllergies = $modelUser->getAllergiesByUserId($user_id);
+    }
 }
 ?>
 
@@ -47,8 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_resa'])) {
         <link href="../css/style.css" rel="stylesheet">
     </head>
     <body>
-        <?php require_once '../views/header.php'; ?>
-         
+    
+        <?php require_once '../views/header.php';?>
+        
         
         <section class="container_creer_compte">
             
