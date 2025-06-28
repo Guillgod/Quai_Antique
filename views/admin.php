@@ -26,13 +26,26 @@ $menuController = new MenuController();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_menus'])) {
     if (isset($_POST['menus']) && is_array($_POST['menus'])) {
         foreach ($_POST['menus'] as $id_menu => $menuData) {
-            $menuController->updateMenu([
-                'id_menu' => $id_menu,
-                'titre' => $menuData['titre'],
-                'periode' => $menuData['periode'],
-                'description' => $menuData['description'],
-                'prix' => $menuData['prix']
-            ]);
+            // Vérifie si tous les champs sont vides (trim pour éviter espaces)
+            $allEmpty = 
+                trim($menuData['titre']) === '' &&
+                trim($menuData['periode']) === '' &&
+                trim($menuData['description']) === '' &&
+                (trim($menuData['prix']) === '' || $menuData['prix'] === null);
+
+            if ($allEmpty) {
+                // Supprime le menu concerné
+                $menuController->deleteMenu($id_menu);
+            } else {
+                // Sinon on met à jour normalement
+                $menuController->updateMenu([
+                    'id_menu' => $id_menu,
+                    'titre' => $menuData['titre'],
+                    'periode' => $menuData['periode'],
+                    'description' => $menuData['description'],
+                    'prix' => $menuData['prix']
+                ]);
+            }
         }
         $menu_success = "Menus modifiés avec succès !";
     }
@@ -140,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_menu'])) {
                     <?php endif; ?>
                     
                         <tbody>
-                            <?php foreach ($menus as $menu): ?>
+                            
                             <tr>
                                 <form method="post">
                                     <table class="admin-table" style="margin-bottom:20px;">
@@ -156,16 +169,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_menu'])) {
                                             <?php foreach ($menus as $menu): ?>
                                             <tr>
                                                 <td>
-                                                    <input type="text" name="menus[<?= $menu['id_menu'] ?>][titre]" value="<?= htmlspecialchars($menu['titre']) ?>" required>
+                                                    <input type="text" name="menus[<?= $menu['id_menu'] ?>][titre]" value="<?= htmlspecialchars($menu['titre']) ?>" >
                                                 </td>
                                                 <td>
-                                                    <input type="text" name="menus[<?= $menu['id_menu'] ?>][periode]" value="<?= htmlspecialchars($menu['periode']) ?>" required>
+                                                    <input type="text" name="menus[<?= $menu['id_menu'] ?>][periode]" value="<?= htmlspecialchars($menu['periode']) ?>" >
                                                 </td>
                                                 <td>
                                                     <textarea name="menus[<?= $menu['id_menu'] ?>][description]" required><?= htmlspecialchars($menu['description']) ?></textarea>
                                                 </td>
                                                 <td>
-                                                    <input type="number" step="0.01" min="0" name="menus[<?= $menu['id_menu'] ?>][prix]" value="<?= htmlspecialchars($menu['prix']) ?>" required>
+                                                    <input type="number" step="0.01" min="0" name="menus[<?= $menu['id_menu'] ?>][prix]" value="<?= htmlspecialchars($menu['prix']) ?>" >
                                                 </td>
                                             </tr>
                                             <?php endforeach; ?>
@@ -174,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_menu'])) {
                                     <button type="submit" name="update_menus" class="submit-btn" style="margin-top:15px; margin-bottom:70px;">VALIDER</button>
                                 </form>
                             </tr>
-                            <?php endforeach; ?>
+                            
                         </tbody>
                     </table>
                     <h2>Ajouter un nouveau menu</h2>

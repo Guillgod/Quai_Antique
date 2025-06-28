@@ -36,4 +36,11 @@ class ModelMenu {
     $stmt->bindValue(':id_menu', $id_menu, PDO::PARAM_INT);
     return $stmt->execute();
 }
+
+public function deleteMenu($id_menu) {
+    $sql = "DELETE FROM menu WHERE id_menu = :id_menu";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindValue(':id_menu', $id_menu, PDO::PARAM_INT);
+    return $stmt->execute();
+}
 }

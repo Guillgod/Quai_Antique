@@ -26,4 +26,9 @@ class MenuController {
         $data['prix']
     );
 }
+
+public function deleteMenu($id_menu) {
+    $model = new ModelMenu();
+    return $model->deleteMenu($id_menu);
+}
 }
