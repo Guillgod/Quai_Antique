@@ -146,6 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_plats'])) {
                 <div class="tabs-container">
                     <button type="button" class="tab-btn active" id="tab-infos">Infos Restaurant</button>
                     <button type="button" class="tab-btn" id="tab-menus">Les Menus</button>
+                    <button type="button" class="tab-btn" id="tab-plats">La Carte</button>
                     <button type="button" class="tab-btn" id="tab-galerie">La Galerie</button>
                     <button type="button" class="tab-btn" id="tab-reservations">Les Réservations</button>
                 </div>
@@ -254,9 +255,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_plats'])) {
                         <input type="number" step="0.01" min="0" name="prix" placeholder="Prix (€)" required>
                         <button type="submit" name="add_menu" class="submit-btn" style="margin-top:10px;">AJOUTER</button>
                     </form>
-
-                    <!-- Les Plats -->
-                    <h2 style="margin-top:40px;">Les plats de la carte</h2>
+                </div>
+                    
+                
+                <!-- Gallerie (vide pour l'instant) -->
+                <div id="content-carte" style="display:none;">
+                     <!-- Les Plats -->
+                    <h2 style="margin-top:40px;color:#bf902b;">Les plats de la carte</h2>
                      
                 <?php if (!empty($plats_success)): ?>
                     <div style="color:green;text-align:center;"><?= $plats_success ?></div>
@@ -280,7 +285,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_plats'])) {
                 }
                 foreach ($categories as $cat => $platsCat) {
                     if (count($platsCat) === 0) continue;
-                    echo "<h3 style='margin-top:24px;'>LES " . strtoupper($cat) . "S</h3>";
+                    echo "<h2 style='margin-top:32px;'>LES " . strtoupper($cat) . "S</h2>";
                     foreach ($platsCat as $plat) {
                         echo "<div style='margin-bottom:18px;'>";
                         echo '<input type="text" name="plats['.$plat['id_plats'].'][titre]" value="'.htmlspecialchars($plat['titre']).'" placeholder="Titre" > ';
@@ -296,7 +301,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_plats'])) {
                     }
                 }
                 ?>
-                    <button type="submit" name="update_plats" class="submit-btn" style="margin-top:15px;">Enregistrer les plats</button>
+                    <button type="submit" name="update_plats" class="submit-btn" style="margin-top:15px;">ENREGISTRER</button>
                 </form>
                     <h2 style="margin-top:40px;">Ajouter un nouveau plat</h2>
                     <form method="post" style="margin-bottom: 32px;">
@@ -314,7 +319,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_plats'])) {
                 </div>
 
                 
-
 
 
                 <!-- Gallerie (vide pour l'instant) -->
@@ -375,6 +379,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_plats'])) {
         const tabs = [
             {btn: 'tab-infos', content: 'content-infos'},
             {btn: 'tab-menus', content: 'content-menus'},
+            {btn: 'tab-plats', content: 'content-carte'}, // Utilise le même contenu que les menus
             {btn: 'tab-galerie', content: 'content-galerie'},
             {btn: 'tab-reservations', content: 'content-reservations'},
         ];
