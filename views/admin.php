@@ -21,6 +21,16 @@ require_once '../models/ModelMenu.php';
 require_once '../controllers/MenuController.php';
 
 $menuController = new MenuController();
+
+// Gestion de l'affichage de tous les plats : 
+    require_once '../models/ModelPlat.php';
+    require_once '../controllers/PlatController.php';
+
+    $platController = new PlatController();
+    $plats = $platController->getAllPlats();
+
+
+
 // Si POST : on met à jour un menu
 // MAJ groupée des menus
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_menus'])) {
@@ -69,7 +79,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_menu'])) {
     } else {
         $menu_success = "Erreur lors de l'ajout du menu.";
     }
+
+    
 }
+
+// Gestion de l'ajout d'un plat
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_plat'])) {
+    $platData = [
+        'titre' => $_POST['plat_titre'] ?? '',
+        'description' => $_POST['plat_description'] ?? '',
+        'prix' => $_POST['plat_prix'] ?? '',
+        'categorie' => $_POST['plat_categorie'] ?? '',
+    ];
+    $platController->addPlat($platData);
+    // Recharger la liste des plats après ajout
+    $plats = $platController->getAllPlats();
+}
+
+// Gestion de la mise à jour des plats et de la suppression d'un plat : 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_plats'])) {
+    if (isset($_POST['plats']) && is_array($_POST['plats'])) {
+        foreach ($_POST['plats'] as $id_plat => $platData) {
+            // Vérifie si tous les champs sont vides
+            $allEmpty = 
+                trim($platData['titre']) === '' &&
+                trim($platData['description']) === '' &&
+                (trim($platData['prix']) === '' || $platData['prix'] === null);
+
+            if ($allEmpty) {
+                $platController->deletePlat($id_plat);
+            } else {
+                $platController->updatePlat([
+                    'id_plats' => $id_plat,
+                    'titre' => $platData['titre'],
+                    'description' => $platData['description'],
+                    'prix' => $platData['prix'],
+                    'categorie' => $platData['categorie']
+                ]);
+            }
+        }
+        // Recharge la liste après modification
+        $plats = $platController->getAllPlats();
+        $plats_success = "Plats modifiés avec succès !";
+    }
+}
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -198,7 +254,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_menu'])) {
                         <input type="number" step="0.01" min="0" name="prix" placeholder="Prix (€)" required>
                         <button type="submit" name="add_menu" class="submit-btn" style="margin-top:10px;">AJOUTER</button>
                     </form>
+
+                    <!-- Les Plats -->
+                    <h2 style="margin-top:40px;">Les plats de la carte</h2>
+                     
+                <?php if (!empty($plats_success)): ?>
+                    <div style="color:green;text-align:center;"><?= $plats_success ?></div>
+                <?php endif; ?>
+
+                <form method="post" style="margin-bottom:32px;">
+                <?php
+                // Toujours la même logique de regroupement par catégorie
+                $categories = [
+                    'Entrée' => [],
+                    'Plat' => [],
+                    'Dessert' => [],
+                ];
+                foreach ($plats as $plat) {
+                    $cat = ucfirst(strtolower($plat['categorie']));
+                    if (!in_array($cat, ['Entrée', 'Plat', 'Dessert'])) {
+                        $cat = 'Autres';
+                        if (!isset($categories[$cat])) $categories[$cat] = [];
+                    }
+                    $categories[$cat][] = $plat;
+                }
+                foreach ($categories as $cat => $platsCat) {
+                    if (count($platsCat) === 0) continue;
+                    echo "<h3 style='margin-top:24px;'>LES " . strtoupper($cat) . "S</h3>";
+                    foreach ($platsCat as $plat) {
+                        echo "<div style='margin-bottom:18px;'>";
+                        echo '<input type="text" name="plats['.$plat['id_plats'].'][titre]" value="'.htmlspecialchars($plat['titre']).'" placeholder="Titre" > ';
+                        echo '<textarea name="plats['.$plat['id_plats'].'][description]" >'.htmlspecialchars($plat['description']).'</textarea> ';
+                        echo '<input type="number" step="0.01" min="0" name="plats['.$plat['id_plats'].'][prix]" value="'.htmlspecialchars($plat['prix']).'" placeholder="Prix (€)" > ';
+                        echo '<select name="plats['.$plat['id_plats'].'][categorie]" required>';
+                        foreach (['Entrée', 'Plat', 'Dessert'] as $option) {
+                            $selected = ($plat['categorie'] == $option) ? 'selected' : '';
+                            echo '<option value="'.$option.'" '.$selected.'>'.$option.'</option>';
+                        }
+                        echo '</select>';
+                        echo '</div>';
+                    }
+                }
+                ?>
+                    <button type="submit" name="update_plats" class="submit-btn" style="margin-top:15px;">Enregistrer les plats</button>
+                </form>
+                    <h2 style="margin-top:40px;">Ajouter un nouveau plat</h2>
+                    <form method="post" style="margin-bottom: 32px;">
+                        <input type="text" name="plat_titre" placeholder="Titre du plat" required>
+                        <textarea name="plat_description" placeholder="Description du plat" required></textarea>
+                        <input type="number" step="0.01" min="0" name="plat_prix" placeholder="Prix (€)" required>
+                        <select name="plat_categorie" required>
+                            <option value="">Catégorie</option>
+                            <option value="Entrée">Entrée</option>
+                            <option value="Plat">Plat</option>
+                            <option value="Dessert">Dessert</option>
+                        </select>
+                        <button type="submit" name="add_plat" class="submit-btn" style="margin-top:10px;">AJOUTER</button>
+                    </form>
                 </div>
+
+                
+
+
+
                 <!-- Gallerie (vide pour l'instant) -->
                 <div id="content-galerie" style="display:none;">
                     <h2>Galerie à venir...</h2>
