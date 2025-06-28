@@ -1,3 +1,4 @@
+<!-- gestion des infos restaurant -->
 <?php
 require_once '../models/ModelInfo.php';
 require_once '../controllers/InfoController.php';
@@ -14,7 +15,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_infos'])) {
     $restaurantInfos = $infoController->getAllInfos();
 }
 ?>
+<!-- gestion des menus -->
+<?php
+require_once '../models/ModelMenu.php';
+require_once '../controllers/MenuController.php';
 
+$menuController = new MenuController();
+// Si POST : on met à jour un menu
+// MAJ groupée des menus
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_menus'])) {
+    if (isset($_POST['menus']) && is_array($_POST['menus'])) {
+        foreach ($_POST['menus'] as $id_menu => $menuData) {
+            $menuController->updateMenu([
+                'id_menu' => $id_menu,
+                'titre' => $menuData['titre'],
+                'periode' => $menuData['periode'],
+                'description' => $menuData['description'],
+                'prix' => $menuData['prix']
+            ]);
+        }
+        $menu_success = "Menus modifiés avec succès !";
+    }
+}
+    $menus = $menuController->getAllMenus();
+
+
+$menus = $menuController->getAllMenus();
+$menu_success = "";
+// Si POST : on ajoute un nouveau menu
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_menu'])) {
+    $addResult = $menuController->addMenu([
+        'titre' => $_POST['titre'] ?? '',
+        'periode' => $_POST['periode'] ?? '',
+        'description' => $_POST['description'] ?? '',
+        'prix' => $_POST['prix'] ?? '',
+    ]);
+    if ($addResult) {
+        $menu_success = "Menu ajouté avec succès !";
+        $menus = $menuController->getAllMenus(); // Recharger la liste
+    } else {
+        $menu_success = "Erreur lors de l'ajout du menu.";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
     <head>
@@ -33,9 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_infos'])) {
             <div class="container_creer_compte-content3">
                 <div class="tabs-container">
                     <button type="button" class="tab-btn active" id="tab-infos">Infos Restaurant</button>
-                    <button type="button" class="tab-btn" id="tab-reservations">La Galerie</button>
+                    <button type="button" class="tab-btn" id="tab-menus">Les Menus</button>
+                    <button type="button" class="tab-btn" id="tab-galerie">La Galerie</button>
                     <button type="button" class="tab-btn" id="tab-reservations">Les Réservations</button>
                 </div>
+                <!-- infos restaurant -->
                 <div id="content-infos">
                     <h2>Infos Restaurant</h2>
                     <p class="instructions">
@@ -86,6 +131,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_infos'])) {
                         <button type="submit" name="update_infos" class="submit-btn" style="margin-top:15px;">VALIDER</button>
                     </form>
                 </div>
+
+                <!-- Menus -->
+                <div id="content-menus" style="display:none;">
+                    <h2>Menus du restaurant</h2>
+                    <?php if ($menu_success): ?>
+                        <div style="color:green;text-align:center;"><?= $menu_success ?></div>
+                    <?php endif; ?>
+                    
+                        <tbody>
+                            <?php foreach ($menus as $menu): ?>
+                            <tr>
+                                <form method="post">
+                                    <table class="admin-table" style="margin-bottom:20px;">
+                                        <thead>
+                                            <tr>
+                                                <th>Titre</th>
+                                                <th>Période</th>
+                                                <th>Description</th>
+                                                <th>Prix</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($menus as $menu): ?>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" name="menus[<?= $menu['id_menu'] ?>][titre]" value="<?= htmlspecialchars($menu['titre']) ?>" required>
+                                                </td>
+                                                <td>
+                                                    <input type="text" name="menus[<?= $menu['id_menu'] ?>][periode]" value="<?= htmlspecialchars($menu['periode']) ?>" required>
+                                                </td>
+                                                <td>
+                                                    <textarea name="menus[<?= $menu['id_menu'] ?>][description]" required><?= htmlspecialchars($menu['description']) ?></textarea>
+                                                </td>
+                                                <td>
+                                                    <input type="number" step="0.01" min="0" name="menus[<?= $menu['id_menu'] ?>][prix]" value="<?= htmlspecialchars($menu['prix']) ?>" required>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                    <button type="submit" name="update_menus" class="submit-btn" style="margin-top:15px; margin-bottom:70px;">VALIDER</button>
+                                </form>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <h2>Ajouter un nouveau menu</h2>
+                    <form method="post">
+                        <input type="text" name="titre" placeholder="Titre du menu" required>
+                        <input type="text" name="periode" placeholder="Période (ex : Midi, Soir, Semaine...)" required>
+                        <textarea name="description" placeholder="Description du menu" required></textarea>
+                        <input type="number" step="0.01" min="0" name="prix" placeholder="Prix (€)" required>
+                        <button type="submit" name="add_menu" class="submit-btn" style="margin-top:10px;">AJOUTER</button>
+                    </form>
+                </div>
+                <!-- Gallerie (vide pour l'instant) -->
+                <div id="content-galerie" style="display:none;">
+                    <h2>Galerie à venir...</h2>
+                </div>
+                <!-- Réservations (vide pour l'instant) -->
+                <div id="content-reservations" style="display:none;">
+                    <h2>Réservations à venir...</h2>
+                </div>
             </div>
         </section>
 
@@ -129,5 +237,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_infos'])) {
     });
 });
     </script>
+
+    <!-- Gère l'interaction des onglets (voir tabs-container) -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = [
+            {btn: 'tab-infos', content: 'content-infos'},
+            {btn: 'tab-menus', content: 'content-menus'},
+            {btn: 'tab-galerie', content: 'content-galerie'},
+            {btn: 'tab-reservations', content: 'content-reservations'},
+        ];
+        // Cacher tout sauf le 1er tab
+        tabs.forEach((tab, i) => {
+            const btn = document.getElementById(tab.btn);
+            const content = document.getElementById(tab.content);
+            if (btn && content) {
+                if (i === 0) {
+                    btn.classList.add('active');
+                    content.style.display = 'block';
+                } else {
+                    btn.classList.remove('active');
+                    content.style.display = 'none';
+                }
+                btn.addEventListener('click', function() {
+                    tabs.forEach(t => {
+                        const b = document.getElementById(t.btn);
+                        const c = document.getElementById(t.content);
+                        if (b) b.classList.remove('active');
+                        if (c) c.style.display = 'none';
+                    });
+                    btn.classList.add('active');
+                    content.style.display = 'block';
+                });
+            }
+        });
+    });
+    </script>
+
+    
     </body>
 </html>

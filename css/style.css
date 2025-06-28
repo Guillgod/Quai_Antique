@@ -816,6 +816,7 @@ input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="tel"],
+input[type="number"],
 select {
     background: transparent;
     border: none;
@@ -826,6 +827,21 @@ select {
     transition: border-color 0.2s;
     margin-bottom: 10px;
     width: 100%;
+}
+
+textarea {
+    background: transparent;
+    border: none;
+    border-bottom: 1.3px solid #bdbdbd;
+    padding: 11px 3px 7px 0;
+    font-size: 1.12em;
+    color: #252020;
+    transition: border-color 0.2s;
+    margin-bottom: 10px;
+    width: 100%;
+    resize: vertical; /* autorise le redimensionnement vertical du textarea */
+    font-family: inherit;
+    box-sizing: border-box;
 }
 
 input:focus,
@@ -1221,6 +1237,15 @@ input[type="radio"] {
     letter-spacing: 1px;
     font-weight: 700;
     text-transform: uppercase;
+}
+
+.content-menus h3 {
+    text-align: center;
+    color: black;
+    font-size: 1.3em;
+    margin-bottom: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
 }
 
 @media (max-width: 1450px) {
