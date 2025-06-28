@@ -36,7 +36,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
                     <?php endif; ?>
                     
                     <?php if(isset($_SESSION['user']) && $_SESSION['user']['is_admin'] == 1): ?>
-                        <li><a href="#">Admin</a></li>
+                        <li><a href="../views/admin.php">Admin</a></li>
                     <?php endif; ?>
                 </ul>
             </nav>

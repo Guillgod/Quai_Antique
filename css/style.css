@@ -509,6 +509,10 @@ footer p {
     font-weight: bold;
 }
 
+.footer-hours span {
+    font-weight: normal !important;
+}
+
 .footer-contact p {
     margin: 7px 0;
     font-weight: normal;
@@ -896,7 +900,9 @@ input[type="radio"] {
     .container_creer_compte::before,
     .container_creer_compte::after,
     .container_creer_compte2::before,
-    .container_creer_compte2::after {
+    .container_creer_compte2::after
+    .container_creer_compte3::before,
+    .container_creer_compte3::after {
         display: none;
     }
     .container_creer_compte-content {
@@ -1147,3 +1153,100 @@ input[type="radio"] {
     .btn-delete:hover {
         background: #bf2525;
     }
+
+
+    /* Page infos restaurant de la page admin  */
+    .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    }
+    .admin-table th, .admin-table td {
+        border: 1px solid #ccc;
+        padding: 10px 12px;
+        text-align: center;
+    }
+    .admin-table th {
+        background: #f7f7f7;
+        font-weight: bold;
+    }
+
+    .container_creer_compte3 {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    background: #fff;
+}
+
+.container_creer_compte3::before,
+.container_creer_compte3::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #e4e4e4;
+    z-index: 1;
+}
+
+
+.container_creer_compte3::before {
+    left: 10%;
+}
+.container_creer_compte3::after {
+    right: 10%;
+}
+
+.container_creer_compte-content3 {
+    width: 100%;
+    max-width: 1000px;
+    margin: 70px auto 30px auto;
+    background: #fff;
+    border-radius: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 36px 0 44px 0;
+    position: relative;
+}
+
+.container_creer_compte-content3 h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.7em;
+    text-align: center;
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+@media (max-width: 1450px) {
+    .container_creer_compte-content3 {
+        max-width: 97vw;
+        padding: 18px 0;
+    }
+}
+
+@media (max-width: 550px) {
+    .container_creer_compte-content3 h2 {
+        font-size: 2em;
+    }
+}
+
+.admin-table th {
+    position: relative;
+    vertical-align: bottom;
+}
+.admin-th-small {
+    display: block;
+    text-align: center;
+    font-size: 0.88em;
+    color: #888;
+    margin-top: 2px;
+    margin-bottom: -2px;
+    font-weight: normal;
+    letter-spacing: 0.1em;
+}

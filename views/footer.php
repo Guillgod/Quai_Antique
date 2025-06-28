@@ -1,3 +1,10 @@
+
+<?php
+require_once '../controllers/InfoController.php';
+$infoController = new InfoController();
+$restaurantInfos = $infoController->getAllInfos();
+?>
+
 <!DOCTYPE <!DOCTYPE html>
 <html lang="fr">
     <head>
@@ -8,17 +15,38 @@
     </head>
     <body>
     <footer class="footer">
-    <div class="footer_content">
-        <h2>NOUS SOMMES OUVERT !</h2>
-        <div class="footer-hours">
-            <p>Lundi de 12h à 14h et de 19h à 22h</p>
-            <p>Mardi de 12h à 14h et de 19h à 22h</p>
-            <p>Mercredi : fermé</p>
-            <p>Jeudi de 12h à 14h et de 19h à 22h</p>
-            <p>Vendredi de 12h à 14h et de 19h</p>
-            <p>Samedi de 19h à 22h</p>
-            <p>Dimanche de 19h à 22h</p>
-        </div>
+    <div class="footer-hours">
+        <?php foreach ($restaurantInfos as $info): ?>
+            <?php
+                $jour = htmlspecialchars($info['day']);
+                $formatH = function($h) { return $h ? substr($h, 0, 5) : ''; };
+                $om = $formatH($info['opening_morning']);
+                $cm = $formatH($info['closure_morning']);
+                $on = $formatH($info['opening_night']);
+                $cn = $formatH($info['closure_night']);
+
+                // Si matin = 00:00-00:00 → pas d'affichage matin
+                $matin = ($om === "00:00" && $cm === "00:00") ? "" : ($om && $cm ? "$om - $cm" : "");
+                // Si soir = 00:00-00:00 → pas d'affichage soir
+                $soir = ($on === "00:00" && $cn === "00:00") ? "" : ($on && $cn ? "$on - $cn" : "");
+
+                // Prépare l'affichage final
+                if (empty($matin) && empty($soir)) {
+                    $heures = "Fermé";
+                } elseif (!empty($matin) && !empty($soir)) {
+                    $heures = "$matin | $soir";
+                } elseif (!empty($matin)) {
+                    $heures = "$matin";
+                } else {
+                    $heures = "$soir";
+                }
+            ?>
+            <p>
+                <strong><?= $jour ?> :</strong>
+                <span><?= $heures ?></span>
+            </p>
+        <?php endforeach; ?>
+    </div>
         <h2>CONTACTEZ-NOUS :</h2>
         <div class="footer-contact">
             <p>Téléphone : 04 79 85 00 00</p>

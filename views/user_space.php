@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div id="content-reservations" style="display:none;">
                     <h2>Vos réservations</h2>
                     <?php if (empty($userReservations)): ?>
-                        <p>Aucune réservation trouvée.</p>
+                        <p>Aucune réservation effectuée.</p>
                     <?php else: ?>
                         <table class="reservations-table" style="border-collapse:collapse;margin-top:15px;">
                             <thead>
@@ -130,7 +130,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <tbody>
                                 <?php foreach ($userReservations as $resa): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars($resa['reservation_date']) ?></td>
+                                        <td>
+                                            <?php
+                                                $d = DateTime::createFromFormat('Y-m-d', $resa['reservation_date']);
+                                                echo $d ? $d->format('d-m-Y') : htmlspecialchars($resa['reservation_date']);
+                                            ?>
+                                        </td>
                                         <td><?= htmlspecialchars(substr($resa['reservation_heure'],0,5)) ?></td>
                                         <td><?= htmlspecialchars($resa['couvert']) ?></td>
                                         <td><?= htmlspecialchars($resa['allergies'] ?: 'Aucune') ?></td>
