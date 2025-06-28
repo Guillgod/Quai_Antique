@@ -6,6 +6,12 @@ require_once '../models/Model_user.php';
 
 $message = '';
 $user_id = $_SESSION['user']['id_users'] ?? null;
+
+require_once '../models/ModelReservation.php';
+$modelReservation = new ModelReservation();
+$userReservations = $modelReservation->getReservationsByUserId($user_id);
+
+
 if (!$user_id) {
     header('Location: login.php');
     exit();
@@ -22,6 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userData = $modelUser->getUserById($user_id);
     $userAllergies = $modelUser->getAllergiesByUserId($user_id);
 }
+
+// Gère la suppression d'une réservation
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_resa'])) {
+    $idResa = (int)$_POST['delete_resa'];
+    $modelReservation->deleteReservationById($idResa, $user_id);
+    // Recharge les résas après suppression
+    $userReservations = $modelReservation->getReservationsByUserId($user_id);
+}
 ?>
 
 <!DOCTYPE html>
@@ -33,58 +47,110 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <link href="../css/style.css" rel="stylesheet">
     </head>
     <body>
-        <?php require_once 'header.php';?>
+        <?php require_once '../views/header.php'; ?>
          
         
         <section class="container_creer_compte">
+            
+
             <div class="container_creer_compte-content">
-                <h2>Vos informations</h2>
-                <p class="instructions">
-                Vous pouvez modifier vos informations personnelles ou consulter vos réservations. 
-                </p>
-                <form action="user_space.php" method="post" autocomplete="off">
-                <input type="text" id="nom" name="nom" placeholder="Nom de famille" value="<?= htmlspecialchars($userData['nom'] ?? '') ?>" required>
-                <input type="text" id="prenom" name="prenom" placeholder="Prénom" value="<?= htmlspecialchars($userData['prenom'] ?? '') ?>" required>
-                <input type="email" id="email" name="email" placeholder="E-mail" value="<?= htmlspecialchars($userData['email'] ?? '') ?>" required>
-                <input type="password" id="mdp" name="mdp" placeholder="Nouveau mot de passe (laisser vide pour ne pas changer)" autocomplete="new-password">
-                <input type="password" id="mdp2" name="mdp2" placeholder="Confirmer le nouveau mot de passe (laisser vide pour ne pas changer)" autocomplete="new-password">
-                <input type="tel" id="tel" name="tel" placeholder="Téléphone" pattern="[0-9]{10}" value="<?= htmlspecialchars($userData['tel'] ?? '') ?>">
-                <small>Format : 0102030405</small>
-
-                <label for="nb_persons">Nombres de couverts par défaut</label>
-                <select id="nb_persons" name="nb_persons">
-                    <?php for ($i = 1; $i <= 10; $i++): ?>
-                        <option value="<?= $i ?>" <?= ($i == ($userData['nb_persons'] ?? 2)) ? 'selected' : '' ?>><?= $i ?></option>
-                    <?php endfor; ?>
-                </select>
-
-                <label class="label-radio">Allergies notifiées ?</label>
-                <div class="radio-group">
-                    <label>
-                        <input type="radio" name="allergie" value="oui" <?= !empty($userAllergies) ? 'checked' : '' ?>> Oui
-                    </label>
-                    <label>
-                        <input type="radio" name="allergie" value="non" <?= empty($userAllergies) ? 'checked' : '' ?>> Non
-                    </label>
+                <div class="tabs-container">
+                    <button type="button" class="tab-btn active" id="tab-infos">Vos informations</button>
+                    <button type="button" class="tab-btn" id="tab-reservations">Vos réservations</button>
                 </div>
-                <div class="liste-allergies" id="liste-allergies" style="margin-top:10px;<?= !empty($userAllergies) ? '' : 'display:none;' ?>">
-                    <?php
-                    $allergyList = [
-                        "Arachide", "Céleri", "Crustacés", "Fruits à coques", "Gluten", "Lactose",
-                        "Lupin", "Mollusque", "Moutarde", "Oeufs", "Poissons", "Sésame", "Soja", "Sulfites"
-                    ];
-                    foreach ($allergyList as $allergy) {
-                        $checked = in_array($allergy, $userAllergies) ? 'checked' : '';
-                        echo "<label><input type=\"checkbox\" name=\"allergies[]\" value=\"$allergy\" $checked> $allergy</label><br>";
-                    }
-                    ?>
+                <div id="content-infos">
+                    <h2>Vos informations</h2>
+                    <p class="instructions">
+                    Vous pouvez modifier vos informations personnelles ou consulter vos réservations. 
+                    </p>
+                    <form action="user_space.php" method="post" autocomplete="off">
+                        <input type="text" id="nom" name="nom" placeholder="Nom de famille" value="<?= htmlspecialchars($userData['nom'] ?? '') ?>" required>
+                        <input type="text" id="prenom" name="prenom" placeholder="Prénom" value="<?= htmlspecialchars($userData['prenom'] ?? '') ?>" required>
+                        <input type="email" id="email" name="email" placeholder="E-mail" value="<?= htmlspecialchars($userData['email'] ?? '') ?>" required>
+                        <input class="input-petit" type="password" id="mdp" name="mdp" placeholder="Nouveau mot de passe (laisser vide pour ne pas changer)" autocomplete="new-password">
+                        <input class="input-petit" type="password" id="mdp2" name="mdp2" placeholder="Confirmer le nouveau mot de passe (laisser vide pour ne pas changer)" autocomplete="new-password">
+                        <input type="tel" id="tel" name="tel" placeholder="Téléphone" pattern="[0-9]{10}" value="<?= htmlspecialchars($userData['tel'] ?? '') ?>">
+                        <small>Format : 0102030405</small>
+
+                        <label for="nb_persons">Nombres de couverts par défaut</label>
+                        <select id="nb_persons" name="nb_persons">
+                            <?php for ($i = 1; $i <= 10; $i++): ?>
+                                <option value="<?= $i ?>" <?= ($i == ($userData['nb_persons'] ?? 2)) ? 'selected' : '' ?>><?= $i ?></option>
+                            <?php endfor; ?>
+                        </select>
+
+                        <label class="label-radio">Allergies notifiées ?</label>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="allergie" value="oui" <?= !empty($userAllergies) ? 'checked' : '' ?>> Oui
+                            </label>
+                            <label>
+                                <input type="radio" name="allergie" value="non" <?= empty($userAllergies) ? 'checked' : '' ?>> Non
+                            </label>
+                        </div>
+                        <div class="liste-allergies" id="liste-allergies" style="margin-top:10px;<?= !empty($userAllergies) ? '' : 'display:none;' ?>">
+                            <?php
+                            $allergyList = [
+                                "Arachide", "Céleri", "Crustacés", "Fruits à coques", "Gluten", "Lactose",
+                                "Lupin", "Mollusque", "Moutarde", "Oeufs", "Poissons", "Sésame", "Soja", "Sulfites"
+                            ];
+                            foreach ($allergyList as $allergy) {
+                                $checked = in_array($allergy, $userAllergies) ? 'checked' : '';
+                                echo "<label><input type=\"checkbox\" name=\"allergies[]\" value=\"$allergy\" $checked> $allergy</label><br>";
+                            }
+                            ?>
+                        </div>
+                        
+                        <?php if ($message): ?>
+                            <div style="color:red;text-align:center;margin-bottom:10px;"><?php echo $message; ?></div>
+                        <?php endif; ?>
+                        <button type="submit" class="submit-btn">MODIFIER</button>
+                    </form>
                 </div>
-                
-                <?php if ($message): ?>
-                    <div style="color:red;text-align:center;margin-bottom:10px;"><?php echo $message; ?></div>
-                <?php endif; ?>
-                <button type="submit" class="submit-btn">MODIFIER</button>
-                </form>
+
+                <div id="content-reservations" style="display:none;">
+                    <h2>Vos réservations</h2>
+                    <?php if (empty($userReservations)): ?>
+                        <p>Aucune réservation trouvée.</p>
+                    <?php else: ?>
+                        <table class="reservations-table" style="border-collapse:collapse;margin-top:15px;">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Heure</th>
+                                    <th>Couvert(s)</th>
+                                    <th>Allergie(s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($userReservations as $resa): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($resa['reservation_date']) ?></td>
+                                        <td><?= htmlspecialchars(substr($resa['reservation_heure'],0,5)) ?></td>
+                                        <td><?= htmlspecialchars($resa['couvert']) ?></td>
+                                        <td><?= htmlspecialchars($resa['allergies'] ?: 'Aucune') ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="padding:0;background:transparent;">
+                                            <div class="resa-actions">
+                                                <!-- Modifier -->
+                                                <form method="get" action="reservation.php" style="display:inline;">
+                                                    <input type="hidden" name="edit_resa" value="<?= $resa['id_reservations'] ?>">
+                                                    <button type="submit" class="btn-edit">Modifier</button>
+                                                </form>
+                                                <!-- Supprimer -->
+                                                <form method="post" action="user_space.php" style="display:inline;" onsubmit="return confirm('Supprimer cette réservation ?');">
+                                                    <input type="hidden" name="delete_resa" value="<?= $resa['id_reservations'] ?>">
+                                                    <button type="submit" class="btn-delete">Supprimer</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                </div>
             </div>
         </section>
 
@@ -96,6 +162,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Affiche la liste des allergies lorsque la radio allergie est = oui -->
         <script>
         document.addEventListener('DOMContentLoaded', function () {
+    // Tabs logic
+            const btnInfos = document.getElementById('tab-infos');
+            const btnReservations = document.getElementById('tab-reservations');
+            const contentInfos = document.getElementById('content-infos');
+            const contentResa = document.getElementById('content-reservations');
+
+            btnInfos.addEventListener('click', function() {
+                btnInfos.classList.add('active');
+                btnReservations.classList.remove('active');
+                contentInfos.style.display = 'block';
+                contentResa.style.display = 'none';
+            });
+            btnReservations.addEventListener('click', function() {
+                btnInfos.classList.remove('active');
+                btnReservations.classList.add('active');
+                contentInfos.style.display = 'none';
+                contentResa.style.display = 'block';
+            });
+
+            // Allergies: déjà présent, garde-le !
             function updateAllergiesList() {
                 const allergiesOui = document.querySelector('input[name="allergie"][value="oui"]');
                 const listeAllergies = document.getElementById('liste-allergies');
@@ -103,15 +189,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     listeAllergies.style.display = "block";
                 } else {
                     listeAllergies.style.display = "none";
-                    // Décoche tout quand caché (optionnel)
                     listeAllergies.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false);
                 }
             }
-            // Sur changement des radios
             document.querySelectorAll('input[name="allergie"]').forEach(radio => {
                 radio.addEventListener('change', updateAllergiesList);
             });
-            // Init au chargement (utile si "Oui" pré-coché)
             updateAllergiesList();
         });
         </script>

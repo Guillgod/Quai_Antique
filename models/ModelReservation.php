@@ -71,6 +71,100 @@ class ModelReservation {
     }
 }
 
+    public function getReservationsByUserId($user_id) {
+    $sql = "SELECT r.*, 
+                (SELECT GROUP_CONCAT(a.type_allergie SEPARATOR ', ')
+                    FROM reservations_allergie ra 
+                    JOIN allergie a ON ra.id_allergie_reservation = a.id_allergie
+                    WHERE ra.id_reservation_allergie = r.id_reservations
+                ) as allergies
+            FROM reservations r
+            WHERE r.user_id = :user_id
+            ORDER BY r.reservation_date DESC, r.reservation_heure DESC";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
+
+public function deleteReservationById($idResa, $user_id) {
+    // Sécurité : supprime seulement si ça appartient à ce user
+    $sql = "DELETE FROM reservations WHERE id_reservations = :id AND user_id = :user_id";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindValue(':id', $idResa, PDO::PARAM_INT);
+    $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+}
+
+public function getReservationById($idResa, $user_id) {
+    $sql = "SELECT r.*, 
+                (SELECT GROUP_CONCAT(a.type_allergie SEPARATOR ',')
+                 FROM reservations_allergie ra 
+                 JOIN allergie a ON ra.id_allergie_reservation = a.id_allergie
+                 WHERE ra.id_reservation_allergie = r.id_reservations
+                ) as allergies
+            FROM reservations r
+            WHERE r.id_reservations = :id AND r.user_id = :user_id";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindValue(':id', $idResa, PDO::PARAM_INT);
+    $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $resa = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($resa && $resa['allergies']) {
+        $resa['allergies'] = explode(',', $resa['allergies']);
+    } else {
+        $resa['allergies'] = [];
+    }
+    return $resa;
+}
+
+public function updateReservationById($idResa, $date, $heure, $couvert, $allergies, $user_id) {
+    try {
+        $this->conn->beginTransaction();
+        $sql = "UPDATE reservations SET reservation_date=:date, reservation_heure=:heure, couvert=:couvert
+                WHERE id_reservations=:id AND user_id=:user_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':date', $date);
+        $stmt->bindParam(':heure', $heure);
+        $stmt->bindParam(':couvert', $couvert);
+        $stmt->bindParam(':id', $idResa);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+
+        // Supprimer puis remettre les allergies (plus propre)
+        $sqlDel = "DELETE FROM reservations_allergie WHERE id_reservation_allergie = :id";
+        $stmtDel = $this->conn->prepare($sqlDel);
+        $stmtDel->bindValue(':id', $idResa, PDO::PARAM_INT);
+        $stmtDel->execute();
+
+        if (!empty($allergies)) {
+            $placeholders = [];
+            foreach ($allergies as $idx => $allergie) {
+                $placeholders[] = ":allergie_$idx";
+            }
+            $in = implode(',', $placeholders);
+            $sqlAllergies = "SELECT id_allergie FROM allergie WHERE type_allergie IN ($in)";
+            $stmtAllergies = $this->conn->prepare($sqlAllergies);
+            foreach ($allergies as $idx => $allergie) {
+                $stmtAllergies->bindValue(":allergie_$idx", $allergie, PDO::PARAM_STR);
+            }
+            $stmtAllergies->execute();
+            $ids = $stmtAllergies->fetchAll(PDO::FETCH_COLUMN);
+
+            foreach ($ids as $id_allergie) {
+                $sqlJointure = "INSERT INTO reservations_allergie (id_reservation_allergie, id_allergie_reservation) VALUES (:id_reservation_allergie, :id_allergie_reservation)";
+                $stmtJointure = $this->conn->prepare($sqlJointure);
+                $stmtJointure->bindValue(':id_reservation_allergie', $idResa, PDO::PARAM_INT);
+                $stmtJointure->bindValue(':id_allergie_reservation', $id_allergie, PDO::PARAM_INT);
+                $stmtJointure->execute();
+            }
+        }
+        $this->conn->commit();
+    } catch (Exception $e) {
+        $this->conn->rollBack();
+        throw $e;
+    }
+}
 }
 
