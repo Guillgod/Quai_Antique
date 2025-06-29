@@ -21,5 +21,10 @@ class GalleryController {
     $model = new ModelGallery();
     return $model->deletePhoto($id);
 }
+
+    public function updatePhotoTitle($id, $titre) {
+    $model = new ModelGallery();
+    return $model->updatePhotoTitle($id, $titre);
+    }
 }
 ?>

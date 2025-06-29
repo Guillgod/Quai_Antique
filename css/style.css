@@ -1334,3 +1334,28 @@ input[type="radio"] {
     font-weight: normal;
     letter-spacing: 0.1em;
 }
+
+/* Personnalisation du formulaire d'ajout d'une galerie */
+.form-gallery-add {
+    display: flex;
+    flex-direction: column;
+    align-items: center;        /* Centre tout horizontalement */
+    justify-content: center;    /* Optionnel ici */
+    gap: 30px;                  /* Espacement entre les champs */
+    margin: 0 auto 32px auto;   /* Centré avec auto, espace bas */
+    max-width: 440px;
+    width: 100%;
+}
+
+/* Pour que les inputs ne prennent pas toute la largeur */
+.form-gallery-add input[type="text"],
+.form-gallery-add input[type="file"] {
+    width: 320px;
+    max-width: 100%;
+    text-align: center;
+}
+
+.form-gallery-add .submit-btn {
+    width: 180px;
+    margin: 0 auto;
+}

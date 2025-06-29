@@ -352,31 +352,43 @@ $gallery_photos = $galleryController->getAllPhotos();
                         <div style="color:green;text-align:center;"><?= $gallery_success ?></div>
                     <?php endif; ?>
 
-                    <div class="creation-gallery2" style="margin-bottom:38px;">
-                        <?php
-                    if (!empty($gallery_photos)) {
-                        foreach ($gallery_photos as $photo) {
-                            echo '<div>';
-                            echo '<div class="creation-img-wrapper">';
-                            // Bouton suppression d'image
-                            echo '<button class="delete-photo-btn" data-id="'.$photo['id_gallery'].'" title="Supprimer cette photo"></button>';
-                            echo '<img src="display_gallery_photo.php?id=' . $photo['id_gallery'] . '" alt="' . htmlspecialchars($photo['titre']) . '" class="creation-image">';
-                            echo '<div class="creation-alt"></div>';
-                            echo '</div>'; // fin de wrapper
-                            echo '<div style="margin-top:8px;text-align:center;font-weight:bold;font-size:1.09em;color:#2b2b2b;">' . htmlspecialchars($photo['titre']) . '</div>';
-                            echo '</div>';
-                        }
-                    } else {
-                        echo '<div style="text-align:center;color:#888;font-size:1.1em;">Aucune photo en galerie pour l’instant.</div>';
-                    }
-                    ?>
-                    </div>
+                    <!-- Formulaire global de mise à jour des titres -->
+                    <form id="gallery-title-form">
+                        <div class="creation-gallery2" style="margin-bottom:0px;">
+                            <?php
+                            if (!empty($gallery_photos)) {
+                                foreach ($gallery_photos as $photo) {
+                                    echo '<div>';
+                                    echo '<div class="creation-img-wrapper">';
+                                    // Bouton suppression d'image
+                                    echo '<button class="delete-photo-btn" data-id="'.$photo['id_gallery'].'" title="Supprimer cette photo"></button>';
+                                    echo '<img src="display_gallery_photo.php?id=' . $photo['id_gallery'] . '" alt="' . htmlspecialchars($photo['titre']) . '" class="creation-image">';
+                                    echo '<div class="creation-alt"></div>';
+                                    echo '</div>'; // fin de wrapper
+
+                                    // Champ titre éditable
+                                    echo '<input type="text" name="titres['.$photo['id_gallery'].']" value="'.htmlspecialchars($photo['titre']).'" style="font-weight:bold;font-size:1.09em;color:#2b2b2b;padding:2px 8px;border-radius:4px;border:1px solid #ccc;width:350px;margin:8px auto 0;display:block;text-align:center;">';
+
+                                    echo '</div>';
+                                }
+                            } else {
+                                echo '<div style="text-align:center;color:#888;font-size:1.1em;">Aucune photo en galerie pour l’instant.</div>';
+                            }
+                            ?>
+                        </div>
+
+                        <!-- Le bouton ENREGISTRER global -->
+                        <div style="text-align:center;margin-top:0px;">
+                            <button type="submit" class="submit-btn" style="padding:9px 35px;font-size:1.08em;">ENREGISTRER</button>
+                            <span id="gallery-titles-feedback" style="margin-left:14px;font-size:1em;"></span>
+                        </div>
+                    </form>
 
                     <h2 style="margin-top:32px;">Ajouter une photo à la galerie</h2>
-                    <form method="post" enctype="multipart/form-data" style="margin-bottom: 32px; max-width:440px;">
-                        <input type="text" name="gallery_titre" placeholder="Titre de la photo" required>
+                    <form method="post" enctype="multipart/form-data" class="form-gallery-add" style="margin-bottom: 32px; max-width:440px;">
+                        <input type="text" name="gallery_titre" placeholder="Titre de la photo" style="margin-top:30px" required>
                         <input type="file" name="gallery_photo" accept="image/*" required>
-                        <button type="submit" name="add_photo_gallery" class="submit-btn" style="margin-top:10px;">AJOUTER</button>
+                        <button type="submit" name="add_photo_gallery" class="submit-btn">AJOUTER</button>
                     </form>
                 </div>
                 
@@ -466,39 +478,69 @@ $gallery_photos = $galleryController->getAllPhotos();
     </script>
     <!-- Suppression d'une image dans Gallerie photo -->
     <script>
-        document.querySelectorAll('.creation-img-wrapper').forEach(function(wrapper) {
-            var img = wrapper.querySelector('img');
-            var altText = img.getAttribute('alt');
-            var altDiv = wrapper.querySelector('.creation-alt');
-            altDiv.textContent = altText;
-        });
-        </script>
+            document.querySelectorAll('.creation-img-wrapper').forEach(function(wrapper) {
+                var img = wrapper.querySelector('img');
+                var altText = img.getAttribute('alt');
+                var altDiv = wrapper.querySelector('.creation-alt');
+                altDiv.textContent = altText;
+            });
+            </script>
 
-        <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.delete-photo-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (!confirm("Confirmer la suppression de cette photo ?")) return;
-            var id = this.getAttribute('data-id');
-            var wrapper = this.closest('.creation-img-wrapper');
-            fetch('delete_gallery_photo.php', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: 'id=' + encodeURIComponent(id)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Supprime visuellement la photo
-                    wrapper.parentNode.remove(); // ou wrapper.remove() selon ta structure
-                } else {
-                    alert("Erreur lors de la suppression.");
-                }
+            <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.delete-photo-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!confirm("Confirmer la suppression de cette photo ?")) return;
+                var id = this.getAttribute('data-id');
+                var wrapper = this.closest('.creation-img-wrapper');
+                fetch('delete_gallery_photo.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'id=' + encodeURIComponent(id)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Supprime visuellement la photo
+                        wrapper.parentNode.remove(); // ou wrapper.remove() selon ta structure
+                    } else {
+                        alert("Erreur lors de la suppression.");
+                    }
+                });
             });
         });
     });
-});
-</script>
+    </script>
+
+<!-- Gère la modification des titres des photos en live -->
+    <script>
+    document.getElementById('gallery-title-form').addEventListener('submit', function(e){
+        e.preventDefault();
+        var form = this;
+        var feedback = document.getElementById('gallery-titles-feedback');
+        var formData = new FormData(form);
+
+        fetch('update_gallery_titles.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                feedback.textContent = "Tous les titres ont été enregistrés !";
+                feedback.style.color = "green";
+                setTimeout(() => { feedback.textContent = ""; }, 2000);
+            } else {
+                feedback.textContent = "Erreur lors de la sauvegarde !";
+                feedback.style.color = "red";
+            }
+        })
+        .catch(() => {
+            feedback.textContent = "Erreur technique !";
+            feedback.style.color = "red";
+        });
+    });
+    </script>
     </body>
 </html>

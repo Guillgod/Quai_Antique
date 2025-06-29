@@ -56,7 +56,15 @@ class ModelGallery {
     $stmt = $this->conn->prepare($sql);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
     return $stmt->execute();
-}
+    }
+
+    public function updatePhotoTitle($id, $titre) {
+        $sql = "UPDATE gallery SET titre = :titre WHERE id_gallery = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':titre', $titre);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
 }
 
 ?>
