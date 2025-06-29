@@ -1361,4 +1361,90 @@ input[type="radio"] {
     margin: 0 auto;
 }
 
-/* Personnalisation du formulaire Rechercher une date pour consulter les réservation depuis admin.php :  */
+/* Personnalisation de l'affichage des menus et de la carte dans la page notre_carte */
+/* PAGE NOTRE CARTE STYLE MODERNE */
+
+.carte-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    padding: 60px 0 30px 0;
+}
+
+.carte-bloc {
+    width: 100%;
+    max-width: 550px;
+    margin-bottom: 36px;
+    text-align: center;
+}
+
+.carte-titre {
+    color: #bf902b;
+    font-family: 'Playfair Display', serif;
+    text-transform: uppercase;
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-bottom: 22px;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+.carte-titre:after {
+    content: "";
+    display: block;
+    margin: 18px auto 0 auto;
+    width: 90px;
+    height: 2px;
+    background: #bf902b;
+    opacity: 0.2;
+}
+
+.carte-item {
+    margin-bottom: 22px;
+}
+
+.carte-item-titre {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6em;
+    font-weight: bold;
+    color: #222;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 2px;
+}
+
+.carte-item-periode {
+    font-size: 1em;
+    color: #7a6b4f;
+    font-style: italic;
+    margin-bottom: 6px;
+}
+
+.carte-item-desc {
+    color: #2d2d2d;
+    font-size: 1.06em;
+    margin-bottom: 6px;
+    margin-top: 0;
+}
+
+.carte-item-prix {
+    font-weight: bold;
+    color: #bf902b;
+    font-size: 1.0em;
+    letter-spacing: 1.2px;
+    margin-bottom: 5px;
+}
+
+.carte-vide {
+    color: #999;
+    font-style: italic;
+    margin-bottom: 18px;
+}
+
+@media (max-width: 768px) {
+    .carte-bloc {
+        max-width: 98vw;
+        padding: 0 4vw;
+    }
+}
