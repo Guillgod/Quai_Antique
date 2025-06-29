@@ -421,10 +421,10 @@ $gallery_photos = $galleryController->getAllPhotos();
                 <!-- Onglet LES RÉSERVATIONS -->
                 <div id="content-reservations" style="display:none;">
                     <h2>LES RÉSERVATIONS</h2>
-                    <form method="get" action="admin.php" style="margin-bottom:18px;">
-                        <label for="resa-date" style="margin-right:8px;">Sélectionnez une date :</label>
+                    <form method="get" action="admin.php" style="margin-bottom:18px; width:100%; max-width:380px; margin:0 auto;" class="form-gallery-add">
+                        <label for="resa-date" style="margin-bottom:4px;">Sélectionnez une date :</label>
                         <input type="date" id="resa-date" name="reservation_date" value="<?= htmlspecialchars($_GET['reservation_date'] ?? date('Y-m-d')) ?>">
-                        <button type="submit" class="submit-btn" style="margin-left:10px;">VOIR LES RÉSERVATIONS</button>
+                        <button type="submit" class="submit-btn">VOIR</button>
                     </form>
                     <?php
                     require_once '../models/ModelReservation.php';
