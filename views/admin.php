@@ -174,7 +174,13 @@ $gallery_photos = $galleryController->getAllPhotos();
     }
     }
 
-
+    // Enregistrement de l'onglet actif :
+    $active_tab = 'infos'; // défaut
+    if (isset($_POST['active_tab'])) {
+        $active_tab = $_POST['active_tab'];
+    } elseif (isset($_GET['active_tab'])) {
+        $active_tab = $_GET['active_tab'];
+    }
 
 
 ?>
@@ -538,40 +544,66 @@ $gallery_photos = $galleryController->getAllPhotos();
 
     <!-- Gère l'interaction des onglets (voir tabs-container) -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabs = [
-            {btn: 'tab-infos', content: 'content-infos'},
-            {btn: 'tab-menus', content: 'content-menus'},
-            {btn: 'tab-plats', content: 'content-carte'}, // Utilise le même contenu que les menus
-            {btn: 'tab-galerie', content: 'content-galerie'},
-            {btn: 'tab-reservations', content: 'content-reservations'},
-        ];
-        // Cacher tout sauf le 1er tab
-        tabs.forEach((tab, i) => {
-            const btn = document.getElementById(tab.btn);
-            const content = document.getElementById(tab.content);
-            if (btn && content) {
-                if (i === 0) {
-                    btn.classList.add('active');
-                    content.style.display = 'block';
-                } else {
-                    btn.classList.remove('active');
-                    content.style.display = 'none';
-                }
-                btn.addEventListener('click', function() {
-                    tabs.forEach(t => {
-                        const b = document.getElementById(t.btn);
-                        const c = document.getElementById(t.content);
-                        if (b) b.classList.remove('active');
-                        if (c) c.style.display = 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabIds = ['infos', 'menus', 'plats', 'galerie', 'reservations'];
+            const tabMap = {
+                infos: {btn: 'tab-infos', content: 'content-infos'},
+                menus: {btn: 'tab-menus', content: 'content-menus'},
+                plats: {btn: 'tab-plats', content: 'content-carte'},
+                galerie: {btn: 'tab-galerie', content: 'content-galerie'},
+                reservations: {btn: 'tab-reservations', content: 'content-reservations'}
+            };
+
+            // Initialisation (par PHP)
+            let activeTab = '<?= addslashes($active_tab) ?>';
+            if (!tabIds.includes(activeTab)) activeTab = 'infos';
+
+            // On affiche l’onglet actif
+            tabIds.forEach(function(id) {
+                document.getElementById(tabMap[id].btn).classList.remove('active');
+                document.getElementById(tabMap[id].content).style.display = 'none';
+            });
+            document.getElementById(tabMap[activeTab].btn).classList.add('active');
+            document.getElementById(tabMap[activeTab].content).style.display = 'block';
+
+            // Click sur un tab : change l’onglet actif
+            tabIds.forEach(function(id) {
+                document.getElementById(tabMap[id].btn).addEventListener('click', function() {
+                    tabIds.forEach(function(id2) {
+                        document.getElementById(tabMap[id2].btn).classList.remove('active');
+                        document.getElementById(tabMap[id2].content).style.display = 'none';
                     });
-                    btn.classList.add('active');
-                    content.style.display = 'block';
+                    this.classList.add('active');
+                    document.getElementById(tabMap[id].content).style.display = 'block';
+                    // MAJ hidden input pour l'onglet actif
+                    document.querySelectorAll('input[name="active_tab"]').forEach(function(inp) {
+                        inp.value = id;
+                    });
                 });
-            }
+            });
+
+            // À chaque soumission d’un formulaire, on renseigne l’onglet actif
+            document.querySelectorAll('form').forEach(function(form) {
+                // Ajoute un champ hidden s’il n’existe pas déjà
+                if (!form.querySelector('input[name="active_tab"]')) {
+                    let input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'active_tab';
+                    input.value = activeTab;
+                    form.appendChild(input);
+                }
+                // Mets à jour la valeur avant submit
+                form.addEventListener('submit', function() {
+                    let input = form.querySelector('input[name="active_tab"]');
+                    // Cherche le bouton actif actuellement
+                    let idActif = tabIds.find(id =>
+                        document.getElementById(tabMap[id].btn).classList.contains('active')
+                    );
+                    input.value = idActif || activeTab;
+                });
+            });
         });
-    });
-    </script>
+        </script>
     <!-- Suppression d'une image dans Gallerie photo -->
     <script>
             document.querySelectorAll('.creation-img-wrapper').forEach(function(wrapper) {
