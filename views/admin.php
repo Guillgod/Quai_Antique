@@ -124,6 +124,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_plats'])) {
     }
 }
 
+// Gestion de la galerie (vide pour l'instant) sous l'onglet admin.php : 
+require_once '../models/ModelGallery.php';
+require_once '../controllers/GalleryController.php';
+
+$galleryController = new GalleryController();
+
+// Ajout d'une photo via le formulaire
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_photo_gallery'])) {
+    $titre = $_POST['gallery_titre'] ?? '';
+    $photo_blob = null;
+    $mime_type = null;
+    if (!empty($_FILES['gallery_photo']['tmp_name'])) {
+        $photo_blob = file_get_contents($_FILES['gallery_photo']['tmp_name']);
+        $mime_type = mime_content_type($_FILES['gallery_photo']['tmp_name']); // <--- récupération du type MIME
+    }
+    if ($titre && $photo_blob && $mime_type) {
+        $galleryController->addPhoto($titre, $photo_blob, $mime_type); // Passe le type mime !
+        $gallery_success = "Photo ajoutée avec succès !";
+    } else {
+        $gallery_success = "Veuillez remplir tous les champs.";
+    }
+}
+// Récupérer toutes les photos pour affichage
+$gallery_photos = $galleryController->getAllPhotos();
+
 
 
 ?>
@@ -320,14 +345,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_plats'])) {
 
                 
 
-
-                <!-- Gallerie (vide pour l'instant) -->
+                <!-- Galerie du restaurant -->
                 <div id="content-galerie" style="display:none;">
-                    <h2>Galerie à venir...</h2>
+                    <h2>Galerie du restaurant</h2>
+                    <?php if (!empty($gallery_success)): ?>
+                        <div style="color:green;text-align:center;"><?= $gallery_success ?></div>
+                    <?php endif; ?>
+
+                    <div class="creation-gallery2" style="margin-bottom:38px;">
+                        <?php
+                    if (!empty($gallery_photos)) {
+                        foreach ($gallery_photos as $photo) {
+                            echo '<div>';
+                            echo '<div class="creation-img-wrapper">';
+                            // Bouton suppression d'image
+                            echo '<button class="delete-photo-btn" data-id="'.$photo['id_gallery'].'" title="Supprimer cette photo"></button>';
+                            echo '<img src="display_gallery_photo.php?id=' . $photo['id_gallery'] . '" alt="' . htmlspecialchars($photo['titre']) . '" class="creation-image">';
+                            echo '<div class="creation-alt"></div>';
+                            echo '</div>'; // fin de wrapper
+                            echo '<div style="margin-top:8px;text-align:center;font-weight:bold;font-size:1.09em;color:#2b2b2b;">' . htmlspecialchars($photo['titre']) . '</div>';
+                            echo '</div>';
+                        }
+                    } else {
+                        echo '<div style="text-align:center;color:#888;font-size:1.1em;">Aucune photo en galerie pour l’instant.</div>';
+                    }
+                    ?>
+                    </div>
+
+                    <h2 style="margin-top:32px;">Ajouter une photo à la galerie</h2>
+                    <form method="post" enctype="multipart/form-data" style="margin-bottom: 32px; max-width:440px;">
+                        <input type="text" name="gallery_titre" placeholder="Titre de la photo" required>
+                        <input type="file" name="gallery_photo" accept="image/*" required>
+                        <button type="submit" name="add_photo_gallery" class="submit-btn" style="margin-top:10px;">AJOUTER</button>
+                    </form>
                 </div>
+                
                 <!-- Réservations (vide pour l'instant) -->
                 <div id="content-reservations" style="display:none;">
-                    <h2>Réservations à venir...</h2>
+                <h2>Réservations à venir...</h2>
                 </div>
             </div>
         </section>
@@ -409,7 +464,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_plats'])) {
         });
     });
     </script>
+    <!-- Suppression d'une image dans Gallerie photo -->
+    <script>
+        document.querySelectorAll('.creation-img-wrapper').forEach(function(wrapper) {
+            var img = wrapper.querySelector('img');
+            var altText = img.getAttribute('alt');
+            var altDiv = wrapper.querySelector('.creation-alt');
+            altDiv.textContent = altText;
+        });
+        </script>
 
-    
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.delete-photo-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!confirm("Confirmer la suppression de cette photo ?")) return;
+            var id = this.getAttribute('data-id');
+            var wrapper = this.closest('.creation-img-wrapper');
+            fetch('delete_gallery_photo.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'id=' + encodeURIComponent(id)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Supprime visuellement la photo
+                    wrapper.parentNode.remove(); // ou wrapper.remove() selon ta structure
+                } else {
+                    alert("Erreur lors de la suppression.");
+                }
+            });
+        });
+    });
+});
+</script>
     </body>
 </html>

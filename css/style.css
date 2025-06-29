@@ -301,20 +301,89 @@ header {
     text-decoration: underline;
 }
 
-/* Styles pour les créations images */
-.creation-image {
-    display: block;
-    width: 100%;
+.creation-img-wrapper {
+    width: 350px;
     height: 268px;
-    margin: 0;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.10);
-    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;      /* Masque ce qui dépasse */
+    background: #faf8f6;
+    position: relative;    /* Pour les overlays */
+}
+
+/* Images de la galerie */
+.creation-image {
+    width: 100%;           /* Remplit le wrapper horizontalement */
+    height: 100%;          /* Remplit le wrapper verticalement */
+    object-fit: cover;     /* ROGNE ce qui dépasse, sans déformer */
+    display: block;
     transition: transform 0.2s;
-    max-width: 100%;
+    background: #faf8f6;   /* Couleur de fond neutre si PNG transparent */
 }
 .creation-image:hover {
     transform: scale(1.03);
 }
+
+.delete-photo-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 30px; height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: #e53935;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4em;
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.17);
+    transition: background 0.2s;
+}
+.delete-photo-btn:hover {
+    background: #b71c1c;
+}
+.delete-photo-btn:before, .delete-photo-btn:after {
+    content: '';
+    position: absolute;
+    left: 14px; top: 8px;
+    width: 2px; height: 14px;
+    background: #fff;
+    border-radius: 2px;
+}
+.delete-photo-btn:before { transform: rotate(45deg);}
+.delete-photo-btn:after { transform: rotate(-45deg);}
+
+/* Styles pour les créations images */
+/* .creation-image {
+    display: block;
+    width: 350px;
+    height: 268px;
+    margin: 0 auto;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+    object-fit: cover;
+    transition: transform 0.2s;
+     
+} */
+
+/* .creation-img-wrapper {
+    position: relative;
+    display: flex;          
+    align-items: flex-start;
+    justify-content: flex-start;
+    max-width: 100%;
+    width: 350px;           
+    min-width: 0;
+    overflow: hidden;     
+    margin: 0 10px;
+} */
+
+  
+/* .creation-image:hover {
+    transform: scale(1.03);
+} */
 
 @media (max-width: 600px) {
     .creation-large, .creation-medium, .creation-small {
@@ -369,17 +438,7 @@ header {
 
 
 
-.creation-img-wrapper {
-    position: relative;
-    display: flex;         /* flex pour garder l'image centrée et remplir la div */
-    align-items: flex-start;
-    justify-content: flex-start;
-    max-width: 100%;
-    width: 350px;          /* largeur par défaut, adapte selon ton besoin ou enlève si tu veux 100% */
-    min-width: 0;
-    overflow: hidden;      /* important pour les overlays */
-    margin: 0 10px;
-}
+
 
 .creation-alt {
     position: absolute;
