@@ -151,6 +151,32 @@ $gallery_photos = $galleryController->getAllPhotos();
 
 
 
+// Gestion de la mise à jour des réservations depuis la page admin.php
+
+    // Gestion suppression pour l'admin 
+    require_once '../models/ModelReservation.php';
+    require_once '../models/Model_user.php';
+    $modelReservation = new ModelReservation();
+    $dateFiltre = $_GET['reservation_date'] ?? date('Y-m-d');
+
+    // 1. Pour afficher la liste (remplace tout ce qui touche au prepare/execute direct)
+    $resaList = $modelReservation->getReservationsByDateWithUser($dateFiltre);
+
+    // 2. Pour la suppression admin (remplace l’appel direct à $modelReservation->conn)
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_resa_admin'])) {
+        $idResa = (int)$_POST['delete_resa_admin'];
+        try {
+            $modelReservation->deleteReservationByIdAdmin($idResa);
+            header('Location: admin.php?reservation_date=' . urlencode($_POST['reservation_date']));
+            exit;
+        } catch (Exception $e) {
+            echo '<div style="color:red;text-align:center;">Erreur suppression : ' . htmlspecialchars($e->getMessage()) . '</div>';
+    }
+    }
+
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -392,10 +418,80 @@ $gallery_photos = $galleryController->getAllPhotos();
                     </form>
                 </div>
                 
-                <!-- Réservations (vide pour l'instant) -->
+                <!-- Onglet LES RÉSERVATIONS -->
                 <div id="content-reservations" style="display:none;">
-                <h2>Réservations à venir...</h2>
+                    <h2>LES RÉSERVATIONS</h2>
+                    <form method="get" action="admin.php" style="margin-bottom:18px;">
+                        <label for="resa-date" style="margin-right:8px;">Sélectionnez une date :</label>
+                        <input type="date" id="resa-date" name="reservation_date" value="<?= htmlspecialchars($_GET['reservation_date'] ?? date('Y-m-d')) ?>">
+                        <button type="submit" class="submit-btn" style="margin-left:10px;">VOIR LES RÉSERVATIONS</button>
+                    </form>
+                    <?php
+                    require_once '../models/ModelReservation.php';
+                    require_once '../models/Model_user.php';
+                    $modelReservation = new ModelReservation();
+                    $dateFiltre = $_GET['reservation_date'] ?? date('Y-m-d');
+                    $resaList = $modelReservation->getReservationsByDateWithUser($dateFiltre);
+                    ?>
+                    <?php if (empty($resaList)): ?>
+                        <p style="margin-top:14px;color:#999;text-align:center;">Aucune réservation ce jour-là.</p>
+                    <?php else: ?>
+                        <table class="reservations-table" style="margin-top:18px;">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Téléphone</th>
+                                    <th>Date</th>
+                                    <th>Heure</th>
+                                    <th>Couvert(s)</th>
+                                    <th>Allergie(s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($resaList as $resa): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($resa['nom']) ?></td>
+                                    <td><?= htmlspecialchars($resa['prenom']) ?></td>
+                                    <td><?= htmlspecialchars($resa['tel']) ?></td>
+                                    <td>
+                                        <?php
+                                        $d = DateTime::createFromFormat('Y-m-d', $resa['reservation_date']);
+                                        echo $d ? $d->format('d-m-Y') : htmlspecialchars($resa['reservation_date']);
+                                        ?>
+                                    </td>
+                                    <td><?= htmlspecialchars(substr($resa['reservation_heure'], 0, 5)) ?></td>
+                                    <td><?= htmlspecialchars($resa['couvert']) ?></td>
+                                    <td><?= htmlspecialchars($resa['allergies'] ?: 'Aucune') ?></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" style="padding:0;background:transparent;">
+                                        <div class="resa-actions">
+                                            <!-- Modifier -->
+                                            <form method="get" action="reservation.php" style="display:inline;">
+                                                <input type="hidden" name="edit_resa" value="<?= $resa['id_reservations'] ?>">
+                                                <button type="submit" class="btn-edit">Modifier</button>
+                                                <input type="hidden" name="from_admin" value="1">
+                                            </form>
+                                            <!-- Supprimer (en tant qu'admin : pas besoin d'user_id) -->
+                                            <form method="post" action="admin.php" style="display:inline;" onsubmit="return confirm('Supprimer cette réservation ?');">
+                                                <input type="hidden" name="delete_resa_admin" value="<?= $resa['id_reservations'] ?>">
+                                                <input type="hidden" name="reservation_date" value="<?= htmlspecialchars($dateFiltre) ?>">
+                                                <button type="submit" class="btn-delete">Supprimer</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
                 </div>
+
+
+
+
+
             </div>
         </section>
 

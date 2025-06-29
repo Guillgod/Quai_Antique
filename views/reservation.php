@@ -26,7 +26,11 @@ $id_edit = isset($_GET['edit_resa']) ? (int)$_GET['edit_resa'] : null;
 $resaData = null;
 if ($id_edit) {
     $model = new ModelReservation();
-    $resaData = $model->getReservationById($id_edit, $_SESSION['user']['id_users']);
+    if (!empty($_GET['from_admin'])) {
+        $resaData = $model->getReservationByIdAdmin($id_edit);
+    } elseif (isset($_SESSION['user'])) {
+        $resaData = $model->getReservationById($id_edit, $_SESSION['user']['id_users']);
+    }
 }
 ?>
 
@@ -62,13 +66,16 @@ $date_aujourdhui = date('Y-m-d');
                 <!-- Si on édite une réservation, on ajoute un champ caché pour récupérer les infos de la réservation-->
                 <?php if ($id_edit): ?>
                     <input type="hidden" name="edit_resa" value="<?= $id_edit ?>">
+                    <?php if (!empty($_GET['from_admin'])): ?>
+                        <input type="hidden" name="from_admin" value="1">
+                    <?php endif; ?>
                 <?php endif; ?>
 
                 <p class="instructions">
                 Pour plus de 10 personnes, contactez-nous par téléphone.
                 </p>
-                 <label for="couvert">Nombres de couverts</label>
-                 
+                <label for="couvert">Nombres de couverts</label>
+                
                 <select id="couvert" name="couvert">
                     <?php for ($i = 1; $i <= 10; $i++): ?>
                         <option value="<?= $i ?>"

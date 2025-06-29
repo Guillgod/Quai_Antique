@@ -6,29 +6,35 @@ require_once '../models/Model_user.php';
 
 class ReservationController {
     public function submitReservation($data) {
-    if (!isset($_SESSION['user'])) {
-        header('Location: login.php?must_connect=1');
+        $is_admin = !empty($_GET['from_admin']) || !empty($data['from_admin']);
+
+        if (!$is_admin && !isset($_SESSION['user'])) {
+            header('Location: login.php?must_connect=1');
+            exit();
+        }
+
+        $model = new ModelReservation();
+
+        $user_id = $_SESSION['user']['id_users'] ?? null;
+        $reservation_date = $data['date'] ?? '';
+        $service = $data['service'] ?? '';
+        $reservation_heure = $data['horaire'] ?? '';
+        $couvert = $data['couvert'] ?? 2;
+        $allergies = isset($data['allergies']) ? $data['allergies'] : [];
+
+        // Si édition
+        if (!empty($data['edit_resa'])) {
+            if ($is_admin) {
+                $model->updateReservationByIdAdmin((int)$data['edit_resa'], $reservation_date, $reservation_heure, $couvert, $allergies);
+            } else {
+                $model->updateReservationById((int)$data['edit_resa'], $reservation_date, $reservation_heure, $couvert, $allergies, $user_id);
+            }
+        } else {
+            $model->addReservation($reservation_date, $reservation_heure, $user_id, $couvert, $allergies);
+        }
+        header('Location: success_reservation.php');
         exit();
     }
-
-    $user_id = $_SESSION['user']['id_users'];
-    $reservation_date = $data['date'] ?? '';
-    $service = $data['service'] ?? '';
-    $reservation_heure = $data['horaire'] ?? '';
-    $couvert = $data['couvert'] ?? 2;
-    $allergies = isset($data['allergies']) ? $data['allergies'] : [];
-
-    $model = new ModelReservation();
-
-    // Si édition
-    if (!empty($data['edit_resa'])) {
-        $model->updateReservationById((int)$data['edit_resa'], $reservation_date, $reservation_heure, $couvert, $allergies, $user_id);
-    } else {
-        $model->addReservation($reservation_date, $reservation_heure, $user_id, $couvert, $allergies);
-    }
-    header('Location: success_reservation.php');
-    exit();
-}
 
     // Pour le préremplissage
     public function getUserDefaultData() {

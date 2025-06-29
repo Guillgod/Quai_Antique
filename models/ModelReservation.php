@@ -181,5 +181,109 @@ public function updateReservationById($idResa, $date, $heure, $couvert, $allergi
         throw $e;
     }
 }
+
+    public function getReservationsByDateWithUser($date) {
+        $sql = "SELECT r.*, u.nom, u.prenom, u.tel,
+                       (SELECT GROUP_CONCAT(a.type_allergie SEPARATOR ', ')
+                            FROM reservations_allergie ra
+                            JOIN allergie a ON ra.id_allergie_reservation = a.id_allergie
+                            WHERE ra.id_reservation_allergie = r.id_reservations
+                       ) as allergies
+                FROM reservations r
+                JOIN users u ON u.id_users = r.user_id
+                WHERE r.reservation_date = :date
+                ORDER BY r.reservation_heure ASC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':date', $date);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // Récupération d'une réservation pour l'admin, sans vérifier le user_id
+        public function getReservationByIdAdmin($idResa) {
+            $sql = "SELECT r.*, 
+                        (SELECT GROUP_CONCAT(a.type_allergie SEPARATOR ',')
+                        FROM reservations_allergie ra 
+                        JOIN allergie a ON ra.id_allergie_reservation = a.id_allergie
+                        WHERE ra.id_reservation_allergie = r.id_reservations
+                        ) as allergies
+                    FROM reservations r
+                    WHERE r.id_reservations = :id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(':id', $idResa, PDO::PARAM_INT);
+            $stmt->execute();
+            $resa = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($resa && $resa['allergies']) {
+                $resa['allergies'] = explode(',', $resa['allergies']);
+            } else {
+                $resa['allergies'] = [];
+            }
+            return $resa;
+        }
+
+
+    // Ajoute cette méthode pour la suppression d'une réservation par l'admin
+    public function deleteReservationByIdAdmin($idResa) {
+        try {
+            $this->conn->beginTransaction();
+            $this->conn->prepare("DELETE FROM reservations_allergie WHERE id_reservation_allergie = ?")->execute([$idResa]);
+            $this->conn->prepare("DELETE FROM reservations WHERE id_reservations = ?")->execute([$idResa]);
+            $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw $e;
+        }
+    }
+
+    // Mise à jour d'une réservation sans contrôle user_id (admin)
+    public function updateReservationByIdAdmin($idResa, $date, $heure, $couvert, $allergies) {
+        try {
+            $this->conn->beginTransaction();
+            $sql = "UPDATE reservations SET reservation_date=:date, reservation_heure=:heure, couvert=:couvert
+                    WHERE id_reservations=:id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':date', $date);
+            $stmt->bindParam(':heure', $heure);
+            $stmt->bindParam(':couvert', $couvert);
+            $stmt->bindParam(':id', $idResa);
+            $stmt->execute();
+
+            // Allergies (déjà OK)
+            $sqlDel = "DELETE FROM reservations_allergie WHERE id_reservation_allergie = :id";
+            $stmtDel = $this->conn->prepare($sqlDel);
+            $stmtDel->bindValue(':id', $idResa, PDO::PARAM_INT);
+            $stmtDel->execute();
+
+            if (!empty($allergies)) {
+                $placeholders = [];
+                foreach ($allergies as $idx => $allergie) {
+                    $placeholders[] = ":allergie_$idx";
+                }
+                $in = implode(',', $placeholders);
+                $sqlAllergies = "SELECT id_allergie FROM allergie WHERE type_allergie IN ($in)";
+                $stmtAllergies = $this->conn->prepare($sqlAllergies);
+                foreach ($allergies as $idx => $allergie) {
+                    $stmtAllergies->bindValue(":allergie_$idx", $allergie, PDO::PARAM_STR);
+                }
+                $stmtAllergies->execute();
+                $ids = $stmtAllergies->fetchAll(PDO::FETCH_COLUMN);
+
+                foreach ($ids as $id_allergie) {
+                    $sqlJointure = "INSERT INTO reservations_allergie (id_reservation_allergie, id_allergie_reservation) VALUES (:id_reservation_allergie, :id_allergie_reservation)";
+                    $stmtJointure = $this->conn->prepare($sqlJointure);
+                    $stmtJointure->bindValue(':id_reservation_allergie', $idResa, PDO::PARAM_INT);
+                    $stmtJointure->bindValue(':id_allergie_reservation', $id_allergie, PDO::PARAM_INT);
+                    $stmtJointure->execute();
+                }
+            }
+            $this->conn->commit();
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw $e;
+        }
+    }
+
+
 }
 
