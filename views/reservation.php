@@ -117,6 +117,9 @@ $date_aujourdhui = date('Y-m-d');
                         <!-- Les autres horaires sont chargés en JS comme tu fais déjà -->
                     </select>
                 </div>
+                <div id="no-slot-message" style="color:#c00;font-weight:bold;text-align:center;margin-top:10px;display:none;">
+                        <p>Désolé, il n’y a plus aucun créneau disponible pour ce service à cette date.</p>
+                </div>
                 <!-- Le JavaScript qui charge les horaires peut forcer le selected, donc ce <option> sert de fallback pour afficher l'horaire si en modification.-->
 
                 <!-- Allergies -->
@@ -227,13 +230,14 @@ $date_aujourdhui = date('Y-m-d');
             function fetchTimeSlots() {
                 const date = document.getElementById('date').value;
                 const service = getSelectedService();
+                const nbCouverts = document.getElementById('couvert').value; // récupère le nombre de couverts demandé
                 if (!date) return;
 
-                fetch('../controllers/get_timeslots.php?date=' + encodeURIComponent(date) + '&service=' + encodeURIComponent(service))
+                fetch('../controllers/get_timeslots.php?date=' + encodeURIComponent(date) + '&service=' + encodeURIComponent(service) + '&couverts=' + encodeURIComponent(nbCouverts))
                 .then(response => response.json())
                 .then(times => {
-                    // console.log("DEBUG horaires :", times, "resaHoraireToSelect:", window.resaHoraireToSelect);
                     const selectHoraire = document.getElementById('horaire');
+                    const noSlotMessage = document.getElementById('no-slot-message');
                     selectHoraire.innerHTML = '';
 
                     if (times.length > 0) {
@@ -241,19 +245,22 @@ $date_aujourdhui = date('Y-m-d');
                             const opt = document.createElement('option');
                             opt.value = h;
                             opt.textContent = h;
-                            // Si mode édition et horaire correspond → sélectionne-le
                             if (window.resaHoraireToSelect && h.substring(0,5) === window.resaHoraireToSelect.substring(0,5)) {
                                 opt.selected = true;
                             }
                             selectHoraire.appendChild(opt);
                         });
                         document.getElementById('select-horaire-container').style.display = 'block';
+                        noSlotMessage.style.display = 'none';
                     } else {
                         selectHoraire.innerHTML = '';
                         document.getElementById('select-horaire-container').style.display = 'none';
+                        noSlotMessage.style.display = 'block';
                     }
                 });
             }
+
+            document.getElementById('couvert').addEventListener('change', fetchTimeSlots);
 
             // Lancement au chargement
             fetchTimeSlots();
