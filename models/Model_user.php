@@ -162,4 +162,19 @@ public function updateUser($user_id, $prenom, $nom, $email, $password, $nb_perso
     }
 }
 
+    public function deleteUser($user_id) {
+        // Supprime d'abord les liens allergies
+        $sql = "DELETE FROM user_allergie WHERE user_id = :user_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Puis supprime l'utilisateur
+        $sql = "DELETE FROM users WHERE id_users = :user_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+
 }

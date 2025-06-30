@@ -18,7 +18,7 @@ class ModelPlat {
                     WHEN categorie = 'Dessert' THEN 3
                     ELSE 4
                   END,
-                  titre ASC";
+                  titre DESC";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

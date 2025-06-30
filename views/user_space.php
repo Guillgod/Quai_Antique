@@ -40,6 +40,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userAllergies = $modelUser->getAllergiesByUserId($user_id);
     }
 }
+
+// Suppression du compte utilisateur
+if (isset($_POST['delete_account'])) {
+    $modelUser->deleteUser($user_id);
+    // Détruit la session, déconnecte et redirige vers la page d'accueil (ou login)
+    session_unset();
+    session_destroy();
+    header('Location: ../index.php');
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -109,7 +119,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php if ($message): ?>
                             <div style="color:red;text-align:center;margin-bottom:10px;"><?php echo $message; ?></div>
                         <?php endif; ?>
-                        <button type="submit" class="submit-btn">MODIFIER</button>
+                        <div class="resa-actions">
+                            <button type="submit" class="submit-btn">MODIFIER</button>
+                            <button type="submit" class="submit-btn2" name="delete_account" onclick="return confirm('Voulez-vous vraiment supprimer votre compte ? Cette action est irréversible.');" style="margin-left: 10px;">SUPPRIMER</button>
+                        </div>
                     </form>
                 </div>
 

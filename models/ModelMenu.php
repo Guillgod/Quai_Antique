@@ -10,7 +10,7 @@ class ModelMenu {
     }
 
     public function getAllMenus() {
-        $sql = "SELECT * FROM menu ORDER BY id_menu DESC";
+        $sql = "SELECT * FROM menu ORDER BY id_menu ASC";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

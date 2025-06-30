@@ -966,6 +966,34 @@ input[type="radio"] {
     color: #fff;
 }
 
+.submit-btn2 {
+    background: #e45151;
+    color: #fff;
+    border: none;
+    padding: 11px 34px;
+    border-radius: 1px;
+    font-size: 1.08em;
+    font-family: inherit;
+    font-weight: 400;
+    margin: 30px auto 0 auto;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 2px;
+    display: flex;                 /* Flexbox pour centrage */
+    justify-content: center;       /* Centre horizontalement */
+    align-items: center;           /* Centre verticalement */
+    width: 160px;
+    height: 46px;                  /* Ajoute une hauteur fixe */
+    min-height: 44px;              /* Pour la réactivité */
+}
+.submit-btn2:hover {
+    background: #bf2525;
+    color: #fff;
+}
+
+ 
+
 .container_creer_compte2 a:hover {
     color: #6b550f;
     text-decoration: underline;

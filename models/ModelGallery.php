@@ -12,7 +12,7 @@ class ModelGallery {
 
     // Récupérer toutes les photos
     public function getAllPhotos() {
-        $sql = "SELECT * FROM gallery ORDER BY id_gallery DESC";
+        $sql = "SELECT * FROM gallery ORDER BY id_gallery ASC";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

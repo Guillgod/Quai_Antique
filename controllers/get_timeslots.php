@@ -34,7 +34,7 @@ if ($row) {
         $end = $row['closure_night'];
     }
 
-    // Générer les créneaux de 30min
+    // Générer les créneaux de 15min
     $current = strtotime($start);
     $endTime = strtotime($end);
 

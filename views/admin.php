@@ -1,3 +1,27 @@
+<?php
+session_start();
+// On suppose que tu as un champ 'is_admin' dans ta table users et donc en session lors du login
+if (empty($_SESSION['user']['is_admin']) || $_SESSION['user']['is_admin'] != 1) {
+    echo '<!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Accès refusé</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="../css/style.css" rel="stylesheet">
+    </head>
+    <body style="display:flex;min-height:100vh;align-items:center;justify-content:center;background:#fafaf9;">
+        <div style="margin:auto;text-align:center;">
+            <h2 style="color:#bf902b;margin-bottom:18px;">Cette page est réservée à l\'administrateur.</h2>
+        </div>
+    </body>
+    </html>';
+    exit;
+}
+?>
+
+
+
 <!-- gestion des infos restaurant -->
 <?php
 require_once '../models/ModelInfo.php';
