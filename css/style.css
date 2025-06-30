@@ -141,7 +141,7 @@ header {
 .fond {
     position: relative;
     min-height: 100vh;
-    padding: 90px 20px 20px 20px;  /* padding-top égal à la hauteur du header */
+    padding: 0px 0px 0px 0px;  /* padding-top égal à la hauteur du header */
     background: url('../upload/photocover.jpg') center center/cover no-repeat;
     z-index: 1;
     overflow: hidden;
@@ -387,8 +387,8 @@ header {
 
 @media (max-width: 600px) {
     .creation-large, .creation-medium, .creation-small {
-        width: 95vw !important;
-        max-width: 95vw;
+        width: 95% !important;
+        max-width: 95%;
     }
 }
 
@@ -483,14 +483,14 @@ header {
     .creation-gallery2 {
         grid-template-columns: repeat(2, 1fr);
         width: 720px;        /* 2*350+1*20 */
-        max-width: 95vw;
+        max-width: 95%;
     }
 }
 @media (max-width: 768px) {
     .creation-gallery2 {
         grid-template-columns: 1fr;
         width: 350px;
-        max-width: 98vw;
+        max-width: 98%;
     }
 }
 /* Footer */
@@ -1393,14 +1393,14 @@ input[type="radio"] {
 
 @media (max-width: 768px) {
     .admin-menu-bloc {
-        max-width: 98vw;
+        max-width: 98%;
         padding: 12px 4vw;
     }
 }
 
 @media (max-width: 1450px) {
     .container_creer_compte-content3 {
-        max-width: 97vw;
+        max-width: 97%;
         padding: 18px 0;
     }
 }
@@ -1538,3 +1538,257 @@ input[type="radio"] {
         padding: 0 4vw;
     }
 }
+
+/* Le responsive  */
+@media (max-width: 768px) {
+    /* Titres */
+    h1 { font-size: 1.6em; text-align: center; }
+    h2 { font-size: 1.2em; text-align: center; }
+    h3 { font-size: 1.05em; }
+
+    /* Paragraphes et textes */
+    p, label, .instructions, .creation-alt {
+        font-size: 1em;
+        line-height: 1.5;
+        text-align: left;
+        margin: 0.5em 0em;
+    }
+    small, .admin-th-small { font-size: 0.93em; }
+
+    /* Liens */
+    a, .link {
+        font-size: 1em;
+        word-break: break-word;
+    }
+
+    /* Inputs, select, textarea */
+    input, select, textarea {
+        font-size: 1em;
+        padding: 8px 10px;
+        width: 100% !important;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        min-width: 0;
+    }
+    .input-petit { width: 100% !important; }
+
+    /* Boutons */
+    button, .submit-btn, .submit-btn2, .btn-edit, .btn-delete {
+        font-size: 1em !important;
+        padding: 10px 18px !important;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+    .resa-actions { flex-direction: column; gap: 6px; }
+
+    .resa-actions {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 0px !important;
+    }
+    .resa-actions .submit-btn2,
+    .resa-actions .btn-delete {
+        margin-left: 0 !important;
+    }
+
+    /* Tableaux */
+    table, .reservations-table, .admin-table {
+        font-size: 0.97em;
+        width: 100% !important;
+        display: block;
+        overflow-x: auto;
+    }
+    th, td {
+        font-size: 0.95em;
+        padding: 7px 4px;
+        min-width: 90px;
+    }
+    thead, tbody, tr { display: block; }
+    tr { margin-bottom: 12px; }
+    th, td { display: block; text-align: left; }
+    .reservations-table td, .reservations-table th { border: none; }
+
+    /* Galerie & images */
+    .creation-gallery, .creation-gallery2 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+    }
+    .creation-img-wrapper {
+        width: 95vw;
+        max-width: 310px;
+        margin: 0 auto;
+    }
+    .creation-image {
+        width: 350px;
+        height: 268px;
+        max-width: 100%;
+        display: block;
+        border-radius: 0px;
+    }
+    .creation-alt {
+        font-size: 0.95em;
+        text-align: center;
+        margin-top: 6px;
+    }
+
+    /* Sections & containers */
+    section, .container, .container2, .container-content, .container-content2, 
+    .container_creer_compte, .container_creer_compte-content, .container_creer_compte2, 
+    .container_creer_compte-content2, .container_creer_compte3, .container_creer_compte-content3 {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 12px 5vw;
+        box-sizing: border-box;
+    }
+    .carte-main, .carte-bloc {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0 2vw;
+    }
+
+    /* Onglets */
+    .tabs-container {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 18px;
+    }
+    .tab-btn {
+        font-size: 1em;
+        padding: 8px 6px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Barres grises verticales : on les masque pour mobile */
+    .container_creer_compte::before,
+    .container_creer_compte::after,
+    .container_creer_compte2::before,
+    .container_creer_compte2::after,
+    .container_creer_compte3::before,
+    .container_creer_compte3::after {
+        display: none !important;
+    }
+
+    /* Divers */
+    .message_erreur, .carte-vide {
+        font-size: 1em;
+        padding: 10px;
+        text-align: center;
+    }
+    .admin-menu-bloc, .admin-input-menu {
+        width: 100% !important;
+        font-size: 1em;
+        margin-bottom: 10px;
+    }
+    /* Ajuste la taille des champs d’admin pour éviter le scroll horizontal */
+    .admin-menu-bloc { flex-direction: column; gap: 4px; }
+}
+
+/* Le header vient cacher ce qui est en dessous. La page passe en dessous du header. */
+/* Desktop par défaut */
+/* body, .fond, .fond2, .fond3, .fond4,
+.container, .container_carte, .container_creer_compte, .container_creer_compte2, .container_creer_compte3 {
+    padding-top: 62px!important; /* hauteur du header desktop */
+
+
+/* Pour les sections .fond, .fond2, .fond3, .fond4 déjà en padding-top, c'est bon */
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 62px; /* adapte à la hauteur de ton header mobile */
+    }
+}
+
+/* @media (max-width: 768px) {
+    .radio-group {
+        flex-direction: row !important;
+        gap: 18px !important;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .radio-group label {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        font-size: 1em;
+        margin: 0;
+        padding: 0 3px;
+    }
+
+    input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        vertical-align: middle;
+        margin: 0 6px 0 0;
+    } */
+
+@media (max-width: 768px) {
+    /* 1. On annule les overrides qui cassent l’alignement horizontal */
+    
+    .radio-group 
+    {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        padding-left: 0 !important;
+        width: auto !important;
+        gap: 25px !important;
+        margin-bottom: 10px !important;
+        box-sizing: border-box;
+        
+    }
+    
+    .liste-allergies {
+        /* PAS de display: flex !important ici */
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding-left: 0 !important;
+        width: auto !important;
+        gap: 0px !important;
+        margin: 0 !important;
+        box-sizing: border-box;
+    }
+
+    .liste-allergies label {
+        display: flex !important;
+        align-items: center !important;
+        font-size: 1em !important;
+        gap: 7px !important; /* espace entre checkbox et texte */
+        min-height: unset !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: auto !important;
+        line-height: 1.25 !important;
+        font-weight: 400 !important;
+        vertical-align: middle !important;
+    }
+
+    .liste-allergies input[type="checkbox"],
+    .radio-group input[type="radio"] {
+        margin: 0 6px 0px 0 !important;
+        width: 15px !important;
+        height: 15px !important;
+        vertical-align: middle !important;
+        accent-color: #bf902b !important;
+        flex-shrink: 0 !important;
+        display: inline-block !important;
+    }
+
+    /* Si tu veux un alignement parfait avec la radio "Oui",
+       il faut parfois ajuster le padding/margin du container parent */
+    #allergies-wrapper {
+        padding-left: 0 !important;
+    }
+}
+
+   
+
+
+
+
