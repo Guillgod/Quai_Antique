@@ -775,20 +775,13 @@ footer a:hover {
 }
 
 /* Barres verticales */
+/* Barres verticales pour tous les conteneurs de compte */
 .container_creer_compte::before,
-.container_creer_compte::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: #e4e4e4;
-    z-index: 1;
-}
-
-/* Barres verticales pour login */
+.container_creer_compte::after,
 .container_creer_compte2::before,
-.container_creer_compte2::after {
+.container_creer_compte2::after,
+.container_creer_compte3::before,
+.container_creer_compte3::after {
     content: '';
     position: absolute;
     top: 0;
@@ -798,19 +791,16 @@ footer a:hover {
     z-index: 1;
 }
 
-
-.container_creer_compte::before {
-    left: 29%;
+/* Placement à 29% des côtés, adapte si tu veux */
+.container_creer_compte::before,
+.container_creer_compte2::before,
+.container_creer_compte3::before {
+    left: 25%;
 }
-.container_creer_compte::after {
-    right: 29%;
-}
-
-.container_creer_compte2::before {
-    left: 29%;
-}
-.container_creer_compte2::after {
-    right: 29%;
+.container_creer_compte::after,
+.container_creer_compte2::after,
+.container_creer_compte3::after {
+    right: 25%;
 }
 
 .container_creer_compte-content h2 {
@@ -1017,22 +1007,24 @@ input[type="radio"] {
     color: #fff;
 }
 
- 
+
 
 .container_creer_compte2 a:hover {
     color: #6b550f;
     text-decoration: underline;
 }
 
-@media (max-width: 1450px) {
+/* Système d'affichage responsive UNIFORME */
+@media (max-width: 1510px) {
     .container_creer_compte::before,
     .container_creer_compte::after,
     .container_creer_compte2::before,
-    .container_creer_compte2::after
+    .container_creer_compte2::after,
     .container_creer_compte3::before,
     .container_creer_compte3::after {
-        display: none;
+        display: none !important;
     }
+
     .container_creer_compte-content {
         max-width: 97vw;
         padding: 18px 0;
@@ -1384,7 +1376,7 @@ input[type="radio"] {
     color: #252020;
     transition: border-color 0.2s;
     width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 .admin-input-menu:focus {
     border-bottom: 1.6px solid #bf902b;
