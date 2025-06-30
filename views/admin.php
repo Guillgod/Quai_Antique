@@ -289,45 +289,19 @@ $gallery_photos = $galleryController->getAllPhotos();
                     <?php if ($menu_success): ?>
                         <div style="color:green;text-align:center;"><?= $menu_success ?></div>
                     <?php endif; ?>
-                    
-                        <tbody>
-                            
-                            <tr>
-                                <form method="post">
-                                    <table class="admin-table" style="margin-bottom:20px;">
-                                        <thead>
-                                            <tr>
-                                                <th>Titre</th>
-                                                <th>Période</th>
-                                                <th>Description</th>
-                                                <th>Prix</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($menus as $menu): ?>
-                                            <tr>
-                                                <td>
-                                                    <input type="text" name="menus[<?= $menu['id_menu'] ?>][titre]" value="<?= htmlspecialchars($menu['titre']) ?>" >
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="menus[<?= $menu['id_menu'] ?>][periode]" value="<?= htmlspecialchars($menu['periode']) ?>" >
-                                                </td>
-                                                <td>
-                                                    <textarea name="menus[<?= $menu['id_menu'] ?>][description]" required><?= htmlspecialchars($menu['description']) ?></textarea>
-                                                </td>
-                                                <td>
-                                                    <input type="number" step="0.01" min="0" name="menus[<?= $menu['id_menu'] ?>][prix]" value="<?= htmlspecialchars($menu['prix']) ?>" >
-                                                </td>
-                                            </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                    <button type="submit" name="update_menus" class="submit-btn" style="margin-top:15px; margin-bottom:70px;">VALIDER</button>
-                                </form>
-                            </tr>
-                            
-                        </tbody>
-                    </table>
+                    <form method="post">
+                        <div class="admin-menus-list">
+                            <?php foreach ($menus as $menu): ?>
+                                <div class="admin-menu-bloc">
+                                    <input type="text" name="menus[<?= $menu['id_menu'] ?>][titre]" value="<?= htmlspecialchars($menu['titre']) ?>" placeholder="Titre du menu" class="admin-input-menu">
+                                    <input type="text" name="menus[<?= $menu['id_menu'] ?>][periode]" value="<?= htmlspecialchars($menu['periode']) ?>" placeholder="Période (ex : Midi, Soir, Semaine…)" class="admin-input-menu">
+                                    <textarea name="menus[<?= $menu['id_menu'] ?>][description]" class="admin-input-menu" placeholder="Description du menu" rows="2"><?= htmlspecialchars($menu['description']) ?></textarea>
+                                    <input type="number" step="0.01" min="0" name="menus[<?= $menu['id_menu'] ?>][prix]" value="<?= htmlspecialchars($menu['prix']) ?>" placeholder="Prix (€)" class="admin-input-menu">
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <button type="submit" name="update_menus" class="submit-btn" style="margin-top:15px; margin-bottom:70px;">VALIDER</button>
+                    </form>
                     <h2>Ajouter un nouveau menu</h2>
                     <form method="post">
                         <input type="text" name="titre" placeholder="Titre du menu" required>
@@ -337,6 +311,7 @@ $gallery_photos = $galleryController->getAllPhotos();
                         <button type="submit" name="add_menu" class="submit-btn" style="margin-top:10px;">AJOUTER</button>
                     </form>
                 </div>
+
                     
                 
                 <!-- Gallerie (vide pour l'instant) -->

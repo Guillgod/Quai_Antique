@@ -94,39 +94,42 @@ $date_aujourdhui = date('Y-m-d');
 
                 <!-- Date de réservation -->
                 <input type="date" id="date" name="date"value="<?= $id_edit && $resaData ? htmlspecialchars($resaData['reservation_date']) : $date_aujourdhui ?>" required style="width: 140px; margin-bottom: 22px;">
+                <div id="monday-warning" style="display:none;color:#c00;margin-bottom:12px;font-weight:bold;">Le restaurant est fermé le lundi.</div>
 
                 <!-- Choix du service midi/soir -->
-                <label for="service" style="font-weight: bolder; margin-bottom:10px;">
-                    Souhaitez-vous réserver pour le midi ou le soir ?
-                </label>
-                <div class="radio-group" style="margin-bottom: 18px;">
-                    <label>
-                        <input type="radio" name="service" value="midi"
-                            <?= ($id_edit && $resaData && substr($resaData['reservation_heure'], 0, 2) < 17) ? 'checked' : ((!$id_edit) ? 'checked' : '') ?>
-                        > Midi
+                 <div id="reservation-choices">
+                    <label class="label-radio" for="service" style="font-weight: bolder; margin-bottom:10px;">
+                        Souhaitez-vous réserver pour le midi ou le soir ?
                     </label>
-                    <label>
-                        <input type="radio" name="service" value="soir"
-                            <?= ($id_edit && $resaData && substr($resaData['reservation_heure'], 0, 2) >= 17) ? 'checked' : '' ?>
-                        > Soir
-                    </label>
-                    <!-- Ici, j'ai fait simple : si l'heure de la réservation commence à 17h ou après, alors c’est "soir". À adapter selon les besoins. -->
-                </div>
+                    <div class="radio-group" style="margin-bottom: 18px;">
+                        <label>
+                            <input type="radio" name="service" value="midi"
+                                <?= ($id_edit && $resaData && substr($resaData['reservation_heure'], 0, 2) < 17) ? 'checked' : ((!$id_edit) ? 'checked' : '') ?>
+                            > Midi
+                        </label>
+                        <label>
+                            <input type="radio" name="service" value="soir"
+                                <?= ($id_edit && $resaData && substr($resaData['reservation_heure'], 0, 2) >= 17) ? 'checked' : '' ?>
+                            > Soir
+                        </label>
+                        <!-- Ici, j'ai fait simple : si l'heure de la réservation commence à 17h ou après, alors c’est "soir". À adapter selon les besoins. -->
+                    </div>
 
-                <!-- Sélection horaire -->
-                <div id="select-horaire-container" style="display:none;">
-                    <label for="horaire">Horaire de réservation</label>
-                    <select id="horaire" name="horaire">
-                        <?php if ($id_edit && $resaData): ?>
-                            <option value="<?= htmlspecialchars($resaData['reservation_heure']) ?>" selected>
-                                <?= htmlspecialchars($resaData['reservation_heure']) ?>
-                            </option>
-                        <?php endif; ?>
-                        <!-- Les autres horaires sont chargés en JS comme tu fais déjà -->
-                    </select>
-                </div>
-                <div id="no-slot-message" style="color:#c00;font-weight:bold;text-align:center;margin-top:10px;display:none;">
-                        <p>Désolé, il n’y a plus aucun créneau disponible pour ce service à cette date et ce nombre de couverts.</p>
+                    <!-- Sélection horaire -->
+                    <div id="select-horaire-container" style="display:none;">
+                        <label for="horaire">Horaire de réservation</label>
+                        <select id="horaire" name="horaire">
+                            <?php if ($id_edit && $resaData): ?>
+                                <option value="<?= htmlspecialchars($resaData['reservation_heure']) ?>" selected>
+                                    <?= htmlspecialchars($resaData['reservation_heure']) ?>
+                                </option>
+                            <?php endif; ?>
+                            <!-- Les autres horaires sont chargés en JS comme tu fais déjà -->
+                        </select>
+                    </div>
+                    <div id="no-slot-message" style="color:#c00;font-weight:bold;text-align:center;margin-top:10px;display:none;">
+                            <p>Désolé, il n’y a plus aucun créneau disponible pour ce service à cette date et ce nombre de couverts.</p>
+                    </div>
                 </div>
                 <!-- Le JavaScript qui charge les horaires peut forcer le selected, donc ce <option> sert de fallback pour afficher l'horaire si en modification.-->
 
@@ -287,6 +290,33 @@ $date_aujourdhui = date('Y-m-d');
             });
 
         });
+
+        // Affiche le message si le lundi est sélectionné
+        document.addEventListener('DOMContentLoaded', function () {
+        const dateInput = document.getElementById('date');
+        const submitBtn = document.querySelector('.submit-btn');
+        const mondayWarning = document.getElementById('monday-warning');
+        const reservationChoices = document.getElementById('reservation-choices');
+
+        // Vérifie si la date sélectionnée est un lundi et désactive le bouton si c'est le cas
+        function checkMonday() {
+            if (!dateInput.value) return;
+            const date = new Date(dateInput.value);
+            if (date.getDay() === 1) { // 1 = lundi
+                mondayWarning.style.display = 'block';
+                submitBtn.disabled = true;
+                if (reservationChoices) reservationChoices.style.display = 'none';
+            } else {
+                mondayWarning.style.display = 'none';
+                submitBtn.disabled = false;
+                if (reservationChoices) reservationChoices.style.display = 'block';
+            }
+        }
+
+        checkMonday();
+
+        dateInput.addEventListener('change', checkMonday);
+    });
         </script>
 
 
