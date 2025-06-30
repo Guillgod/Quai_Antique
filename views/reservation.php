@@ -60,7 +60,15 @@ $date_aujourdhui = date('Y-m-d');
                 Pour réserver une table, remplissez ce formulaire.
                 </p>
                 
-                    
+                <?php
+                // Message d’erreur si la réservation n’a pas pu être créée
+                if (!empty($_GET['reservation_error']) || !empty($_SESSION['reservation_error'])): ?>
+                    <div class="message_erreur" style="margin-bottom:14px;">
+                        <?= $_SESSION['reservation_error'] ?? "Impossible d'effectuer votre réservation, le restaurant est complet." ?>
+                    </div>
+                    <?php unset($_SESSION['reservation_error']); ?>
+                <?php endif; ?>
+
                 <form action="reservation.php" method="post" autocomplete="off">
                 
                 <!-- Si on édite une réservation, on ajoute un champ caché pour récupérer les infos de la réservation-->
@@ -118,28 +126,29 @@ $date_aujourdhui = date('Y-m-d');
                     </select>
                 </div>
                 <div id="no-slot-message" style="color:#c00;font-weight:bold;text-align:center;margin-top:10px;display:none;">
-                        <p>Désolé, il n’y a plus aucun créneau disponible pour ce service à cette date.</p>
+                        <p>Désolé, il n’y a plus aucun créneau disponible pour ce service à cette date et ce nombre de couverts.</p>
                 </div>
                 <!-- Le JavaScript qui charge les horaires peut forcer le selected, donc ce <option> sert de fallback pour afficher l'horaire si en modification.-->
 
                 <!-- Allergies -->
-                <label class="label-radio">Avez-vous des allergies à signaler ?</label>
-                <div class="radio-group">
-                    <label>
-                        <input type="radio" name="allergie" value="oui"
-                            <?= ($id_edit && $resaData && !empty($resaData['allergies'])) || (!$id_edit && !empty($userAllergies)) ? 'checked' : '' ?>
-                        > Oui
-                    </label>
-                    <label>
-                        <input type="radio" name="allergie" value="non"
-                            <?= ($id_edit && $resaData && empty($resaData['allergies'])) || (!$id_edit && empty($userAllergies)) ? 'checked' : '' ?>
-                        > Non
-                    </label>
-                </div>
-                
-
+                <div id="allergies-wrapper">
+                    <label class="label-radio">Avez-vous des allergies à signaler ?</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="allergie" value="oui"
+                                <?= ($id_edit && $resaData && !empty($resaData['allergies'])) || (!$id_edit && !empty($userAllergies)) ? 'checked' : '' ?>
+                            > Oui
+                        </label>
+                        <label>
+                            <input type="radio" name="allergie" value="non"
+                                <?= ($id_edit && $resaData && empty($resaData['allergies'])) || (!$id_edit && empty($userAllergies)) ? 'checked' : '' ?>
+                            > Non
+                        </label>
+                    </div>
                     
-                <!-- Liste des allergies -->
+
+                        
+                    <!-- Liste des allergies -->
                     <div class="liste-allergies" id="liste-allergies"
                     style="margin-top:10px;<?= (($id_edit && $resaData && !empty($resaData['allergies'])) || (!$id_edit && !empty($userAllergies))) ? '' : 'display:none;' ?>">
                     <?php
@@ -157,6 +166,7 @@ $date_aujourdhui = date('Y-m-d');
                         echo "<label><input type=\"checkbox\" name=\"allergies[]\" value=\"$allergy\" $checked> $allergy</label><br>";
                     }
                     ?>
+                    </div>
                 </div>
 
                 <button type="submit" class="submit-btn">SOUMETTRE</button>
@@ -231,6 +241,7 @@ $date_aujourdhui = date('Y-m-d');
                 const date = document.getElementById('date').value;
                 const service = getSelectedService();
                 const nbCouverts = document.getElementById('couvert').value; // récupère le nombre de couverts demandé
+                const submitBtn = document.querySelector('.submit-btn'); // Permet de désactiver le bouton dans le cas où aucun horaire n'est disponible. 
                 if (!date) return;
 
                 fetch('../controllers/get_timeslots.php?date=' + encodeURIComponent(date) + '&service=' + encodeURIComponent(service) + '&couverts=' + encodeURIComponent(nbCouverts))
@@ -238,11 +249,13 @@ $date_aujourdhui = date('Y-m-d');
                 .then(times => {
                     const selectHoraire = document.getElementById('horaire');
                     const noSlotMessage = document.getElementById('no-slot-message');
+                    const allergiesWrapper = document.getElementById('allergies-wrapper');
                     selectHoraire.innerHTML = '';
 
                     if (times.length > 0) {
                         times.forEach(function(h){
                             const opt = document.createElement('option');
+                            submitBtn.disabled = false; // autorise le bouton si un horaire est disponible
                             opt.value = h;
                             opt.textContent = h;
                             if (window.resaHoraireToSelect && h.substring(0,5) === window.resaHoraireToSelect.substring(0,5)) {
@@ -252,10 +265,13 @@ $date_aujourdhui = date('Y-m-d');
                         });
                         document.getElementById('select-horaire-container').style.display = 'block';
                         noSlotMessage.style.display = 'none';
+                        allergiesWrapper.style.display = 'block';
                     } else {
                         selectHoraire.innerHTML = '';
                         document.getElementById('select-horaire-container').style.display = 'none';
                         noSlotMessage.style.display = 'block';
+                        allergiesWrapper.style.display = 'none';
+                        submitBtn.disabled = true; // bloque le bouton si aucun créneau disponible
                     }
                 });
             }

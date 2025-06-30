@@ -920,9 +920,15 @@ small {
 
 /* Radios */
 .label-radio {
-    margin-bottom: 6px;
-    font-weight: 400;
+    /* margin-bottom: 6px; */
+    font-weight: bold;
 }
+
+#allergies-wrapper .label-radio {
+    margin-bottom: 20px;
+    display: block; /* Pour éviter toute incohérence */
+}
+
 .radio-group {
     display: flex;
     gap: 24px;
@@ -964,6 +970,13 @@ input[type="radio"] {
 .submit-btn:hover {
     background: #bf902b;
     color: #fff;
+}
+
+.submit-btn:disabled {
+    background: #ddd;
+    color: #aaa;
+    cursor: not-allowed;
+    border: 1px solid #ccc;
 }
 
 .submit-btn2 {

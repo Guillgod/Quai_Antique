@@ -185,41 +185,51 @@ if (isset($_POST['delete_account'])) {
     <!-- Affiche la liste des allergies lorsque la radio allergie est = oui -->
         <script>
         document.addEventListener('DOMContentLoaded', function () {
-    // Tabs logic
-            const btnInfos = document.getElementById('tab-infos');
-            const btnReservations = document.getElementById('tab-reservations');
-            const contentInfos = document.getElementById('content-infos');
-            const contentResa = document.getElementById('content-reservations');
+        const btnInfos = document.getElementById('tab-infos');
+        const btnReservations = document.getElementById('tab-reservations');
+        const contentInfos = document.getElementById('content-infos');
+        const contentResa = document.getElementById('content-reservations');
+        const TAB_KEY = 'user_space_active_tab';
 
-            btnInfos.addEventListener('click', function() {
-                btnInfos.classList.add('active');
-                btnReservations.classList.remove('active');
-                contentInfos.style.display = 'block';
-                contentResa.style.display = 'none';
-            });
-            btnReservations.addEventListener('click', function() {
+        // Fonction d’affichage
+        function showTab(tab) {
+            if (tab === 'reservations') {
                 btnInfos.classList.remove('active');
                 btnReservations.classList.add('active');
                 contentInfos.style.display = 'none';
                 contentResa.style.display = 'block';
-            });
-
-            // Allergies: déjà présent, garde-le !
-            function updateAllergiesList() {
-                const allergiesOui = document.querySelector('input[name="allergie"][value="oui"]');
-                const listeAllergies = document.getElementById('liste-allergies');
-                if (allergiesOui.checked) {
-                    listeAllergies.style.display = "block";
-                } else {
-                    listeAllergies.style.display = "none";
-                    listeAllergies.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false);
-                }
+            } else {
+                btnInfos.classList.add('active');
+                btnReservations.classList.remove('active');
+                contentInfos.style.display = 'block';
+                contentResa.style.display = 'none';
             }
-            document.querySelectorAll('input[name="allergie"]').forEach(radio => {
-                radio.addEventListener('change', updateAllergiesList);
-            });
-            updateAllergiesList();
+            localStorage.setItem(TAB_KEY, tab);
+        }
+
+        // Restaure l’onglet précédent (par défaut "infos")
+        const lastTab = localStorage.getItem(TAB_KEY) || 'infos';
+        showTab(lastTab);
+
+        btnInfos.addEventListener('click', function() { showTab('infos'); });
+        btnReservations.addEventListener('click', function() { showTab('reservations'); });
+
+        // Gestion des allergies (inchangé)
+        function updateAllergiesList() {
+            const allergiesOui = document.querySelector('input[name="allergie"][value="oui"]');
+            const listeAllergies = document.getElementById('liste-allergies');
+            if (allergiesOui.checked) {
+                listeAllergies.style.display = "block";
+            } else {
+                listeAllergies.style.display = "none";
+                listeAllergies.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false);
+            }
+        }
+        document.querySelectorAll('input[name="allergie"]').forEach(radio => {
+            radio.addEventListener('change', updateAllergiesList);
         });
+        updateAllergiesList();
+    });
         </script>
     </body>
 </html>

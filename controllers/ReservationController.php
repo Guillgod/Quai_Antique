@@ -22,6 +22,14 @@ class ReservationController {
         $couvert = $data['couvert'] ?? 2;
         $allergies = isset($data['allergies']) ? $data['allergies'] : [];
 
+           // CONTRÔLE NOUVEAU : bloque toute tentative avec 00:00:00 ou vide
+        if ($reservation_heure === '00:00:00' || empty($reservation_heure)) {
+            // On peut stocker le message dans la session, ou le renvoyer par GET
+            $_SESSION['reservation_error'] = "Impossible d'effectuer votre réservation, le restaurant est complet.";
+            header('Location: reservation.php?reservation_error=1');
+            exit();
+        }
+        
         // Si édition
         if (!empty($data['edit_resa'])) {
             if ($is_admin) {
