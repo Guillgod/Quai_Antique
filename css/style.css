@@ -44,11 +44,13 @@ button, input, textarea, select {
     color: inherit;
 }
 
+html, body { overflow-x: hidden !important; }
+
 header {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
+    width: 100%;
     z-index: 3000;
 }
 
@@ -136,6 +138,22 @@ header {
 }
 .close-btn:hover {
     color: #6b550f;
+}
+
+@media (max-width: 768px) {
+    .menu {
+        width: 50vw;  /* ou 100vw si tu veux un menu full-screen sur mobile */
+    }
+    .close-btn {
+        font-size:3em;
+        top: 18px;
+        margin-bottom: 10px;
+        width : 40px;
+        height: 40px;
+        align-items: center;
+        
+        /* éventuellement agrandir la taille si besoin */
+    }
 }
 
 .fond {
