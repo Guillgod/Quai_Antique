@@ -65,6 +65,65 @@ class ModelGallery {
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+    function resizeImageToBlob($filePath, $maxWidth = 1920, $maxHeight = 1080, &$mimeType = null) {
+    $info = getimagesize($filePath);
+    if (!$info) return false;
+    $srcMime = $info['mime'];
+    $mimeType = $srcMime;
+    list($srcWidth, $srcHeight) = $info;
+
+    // HARD LIMIT dimensions (sauvegarde serveur)
+    if ($srcWidth > 9000 || $srcHeight > 9000) {
+        return false;
+    }
+    // Si l'image est déjà assez petite, on la renvoie brute
+    if ($srcWidth <= $maxWidth && $srcHeight <= $maxHeight) {
+        return file_get_contents($filePath);
+    }
+
+    // Calcul du ratio de redimensionnement
+    $ratio = min($maxWidth / $srcWidth, $maxHeight / $srcHeight);
+    $dstWidth = (int)($srcWidth * $ratio);
+    $dstHeight = (int)($srcHeight * $ratio);
+
+    // Création de l'image source selon son type
+    switch ($srcMime) {
+        case 'image/jpeg': $srcImage = imagecreatefromjpeg($filePath); break;
+        case 'image/png':  $srcImage = imagecreatefrompng($filePath); break;
+        case 'image/gif':  $srcImage = imagecreatefromgif($filePath); break;
+        default: return false; // Format non géré
+    }
+
+    // Nouvelle image
+    $dstImage = imagecreatetruecolor($dstWidth, $dstHeight);
+
+    // Si PNG, conserve la transparence
+    if ($srcMime === 'image/png') {
+        imagealphablending($dstImage, false);
+        imagesavealpha($dstImage, true);
+    }
+
+    // Redimensionne
+    imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $dstWidth, $dstHeight, $srcWidth, $srcHeight);
+
+    // Sauvegarde dans une variable (BLOB)
+    ob_start();
+    if ($srcMime === 'image/png') {
+        imagepng($dstImage);
+        $mimeType = 'image/png';
+    } else {
+        imagejpeg($dstImage, null, 85); // Qualité 85%
+        $mimeType = 'image/jpeg';
+    }
+    $blob = ob_get_clean();
+
+    // Libération mémoire
+    imagedestroy($srcImage);
+    imagedestroy($dstImage);
+
+    return $blob;
+    }
 }
 
 ?>

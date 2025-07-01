@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <input type="password" id="mdp2" name="mdp2" placeholder="Confirmation du mot de passe" required>
 
-                <input type="tel" id="tel" name="tel" placeholder="Téléphone" pattern="[0-9]{10}">
+                <input type="tel" id="tel" name="tel" placeholder="Téléphone" pattern="[0-9]{10}" required>
                 <small>Format : 0102030405</small>
 
                 <label for="nb_persons">Nombres de couverts par défaut</label>

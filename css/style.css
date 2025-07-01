@@ -427,15 +427,13 @@ header {
 
 .creation-gallery2 {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px 20px;
+    grid-template-columns: repeat(3, 320px); /* ou 1fr, 1fr, 1fr mais moins prévisible */
+    gap: 20px;
     justify-items: center;
-    width: 100%;
-    max-width: 900px;
+    width: 960px;
     margin: 40px auto;
     box-sizing: border-box;
 }
-
 
 
 
@@ -1322,7 +1320,7 @@ input[type="radio"] {
 
 .container_creer_compte-content3 {
     width: 100%;
-    max-width: 1000px;
+    max-width: 1150px;
     margin: 70px auto 30px auto;
     background: #fff;
     border-radius: 0;
@@ -1785,10 +1783,21 @@ input[type="radio"] {
     #allergies-wrapper {
         padding-left: 0 !important;
     }
+
+    
 }
 
-   
+/* Désactive les barres verticales sur galerie admin uniquement */
+.container_creer_compte3.no-barres::before,
+.container_creer_compte3.no-barres::after {
+    display: none !important;
+}
 
+#content-galerie {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centre tout ce qui est à l'intérieur */
+}
 
 
 

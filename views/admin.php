@@ -153,20 +153,34 @@ require_once '../models/ModelGallery.php';
 require_once '../controllers/GalleryController.php';
 
 $galleryController = new GalleryController();
-
+$modelGallery = new ModelGallery();
 // Ajout d'une photo via le formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_photo_gallery'])) {
     $titre = $_POST['gallery_titre'] ?? '';
     $photo_blob = null;
     $mime_type = null;
+    $gallery_success = ""; // Sera affiché au-dessus du formulaire
     if (!empty($_FILES['gallery_photo']['tmp_name'])) {
-        $photo_blob = file_get_contents($_FILES['gallery_photo']['tmp_name']);
-        $mime_type = mime_content_type($_FILES['gallery_photo']['tmp_name']); // <--- récupération du type MIME
+        // Limite le poids à 6 Mo
+        if ($_FILES['gallery_photo']['size'] > 6 * 1024 * 1024) {
+            $gallery_success = "Image trop volumineuse (max 6 Mo).";
+        } else {
+            // Vérifie les dimensions
+            list($w, $h) = getimagesize($_FILES['gallery_photo']['tmp_name']);
+            if ($w > 9000 || $h > 9000) {
+                $gallery_success = "Dimensions trop grandes (max 9000x9000 px).";
+            } else {
+                $photo_blob = $modelGallery->resizeImageToBlob($_FILES['gallery_photo']['tmp_name'], 1920, 1080, $mime_type);
+                if (!$photo_blob) {
+                    $gallery_success = "Erreur lors du traitement de l'image.";
+                }
+            }
+        }
     }
-    if ($titre && $photo_blob && $mime_type) {
+    if ($titre && $photo_blob && $mime_type && empty($gallery_success)) {
         $galleryController->addPhoto($titre, $photo_blob, $mime_type); // Passe le type mime !
         $gallery_success = "Photo ajoutée avec succès !";
-    } else {
+    } elseif (empty($gallery_success)) {
         $gallery_success = "Veuillez remplir tous les champs.";
     }
 }
@@ -380,7 +394,19 @@ $gallery_photos = $galleryController->getAllPhotos();
                 <div id="content-galerie" style="display:none;">
                     <h2>Galerie du restaurant</h2>
                     <?php if (!empty($gallery_success)): ?>
-                        <div style="color:green;text-align:center;"><?= $gallery_success ?></div>
+                        <div
+                            style="text-align:center;
+                                margin-bottom:18px;
+                                font-weight:bold;
+                                color:<?= (stripos($gallery_success, 'succès') !== false) ? '#2e7d32' : '#c62828'; ?>;
+                                background:<?= (stripos($gallery_success, 'succès') !== false) ? '#d0f5dd' : '#ffeaea'; ?>;
+                                border:1px solid <?= (stripos($gallery_success, 'succès') !== false) ? '#90d7b4' : '#f6bebe'; ?>;
+                                border-radius:6px;
+                                padding:10px 14px;
+                                font-size:1.08em;"
+                        >
+                            <?= htmlspecialchars($gallery_success) ?>
+                        </div>
                     <?php endif; ?>
 
                     <!-- Formulaire global de mise à jour des titres -->
@@ -581,6 +607,7 @@ $gallery_photos = $galleryController->getAllPhotos();
                 });
             });
 
+
             // À chaque soumission d’un formulaire, on renseigne l’onglet actif
             document.querySelectorAll('form').forEach(function(form) {
                 // Ajoute un champ hidden s’il n’existe pas déjà
@@ -603,6 +630,30 @@ $gallery_photos = $galleryController->getAllPhotos();
             });
         });
         </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const container = document.querySelector('.container_creer_compte3');
+                function updateBarresGalerie() {
+                    const galerieBtn = document.getElementById('tab-galerie');
+                    if (galerieBtn.classList.contains('active')) {
+                        container.classList.add('no-barres');
+                    } else {
+                        container.classList.remove('no-barres');
+                    }
+                }
+                // Mise à jour initiale
+                updateBarresGalerie();
+
+                // À chaque clic d’onglet
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', updateBarresGalerie);
+                });
+            });
+        </script>
+
+
+
     <!-- Suppression d'une image dans Gallerie photo -->
     <script>
             document.querySelectorAll('.creation-img-wrapper').forEach(function(wrapper) {
@@ -668,6 +719,18 @@ $gallery_photos = $galleryController->getAllPhotos();
             feedback.style.color = "red";
         });
     });
+
+    
+
+// Affiche l’onglet actif au chargement
+tabIds.forEach(function(id) {
+    document.getElementById(tabMap[id].btn).classList.remove('active');
+    document.getElementById(tabMap[id].content).style.display = 'none';
+});
+document.getElementById(tabMap[activeTab].btn).classList.add('active');
+document.getElementById(tabMap[activeTab].content).style.display = 'block';
+
+
     </script>
     </body>
 </html>
