@@ -330,9 +330,9 @@ $gallery_photos = $galleryController->getAllPhotos();
                 
                 <!-- Gallerie (vide pour l'instant) -->
                 <div id="content-carte" style="display:none;">
-                     <!-- Les Plats -->
+                    <!-- Les Plats -->
                     <h2 style="margin-top:40px;color:#bf902b;">Les plats de la carte</h2>
-                     
+                    
                 <?php if (!empty($plats_success)): ?>
                     <div style="color:green;text-align:center;"><?= $plats_success ?></div>
                 <?php endif; ?>
