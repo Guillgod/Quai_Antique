@@ -10,11 +10,18 @@ $date = $_GET['date'];
 $service = $_GET['service']; // 'midi' ou 'soir'
 $couvertsDemandes = isset($_GET['couverts']) ? max(1, (int)$_GET['couverts']) : 1; // mini 1
 
-// Récupérer le jour de la semaine (ex : 'Lundi')
-$timestamp = strtotime($date);
-// Attention selon config serveur, strftime/LC_TIME peut avoir un comportement inattendu
-setlocale(LC_TIME, 'fr_FR.UTF-8', 'fra');
-$day = ucfirst(strftime('%A', $timestamp)); // 'Lundi', 'Mardi', etc.
+// Jour de la semaine en français SANS setlocale
+$jours = [
+    'Sunday'    => 'Dimanche',
+    'Monday'    => 'Lundi',
+    'Tuesday'   => 'Mardi',
+    'Wednesday' => 'Mercredi',
+    'Thursday'  => 'Jeudi',
+    'Friday'    => 'Vendredi',
+    'Saturday'  => 'Samedi'
+];
+$phpDay = date('l', strtotime($date)); // donne 'Monday', 'Tuesday', etc.
+$day = $jours[$phpDay]; // 'Lundi', 'Mardi', etc.
 
 $db = new Database();
 $conn = $db->getConnection();
