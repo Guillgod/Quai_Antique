@@ -20,7 +20,7 @@
                 <p>Notre but, vous faire passer un moment mémorable. Et pour cela, nous mettons un point d'honneur sur la qualité de nos produits. En collaboration directe avec nos producteurs locaux, ayez la garantie d'avoir des produits frais et savoureux dans votre assiette.</p>
                     <div class="creation-gallery">
                         <div class="creation-img-wrapper">
-                            <img src="../upload/photocreation1.png" alt="La fondue savoyarde" class="creation-image">
+                            <img src="../upload/photocreation1.png" alt="La croziflette reblochonne" class="creation-image">
                             <div class="creation-alt"></div>
                         </div>
                         <div class="creation-img-wrapper">
@@ -28,7 +28,7 @@
                             <div class="creation-alt"></div>
                         </div>
                         <div class="creation-img-wrapper">
-                            <img src="../upload/photocreation3.png" alt="Les rissoles aux noix jambon et raclette" class="creation-image">
+                            <img src="../upload/photocreation3.png" alt="La Mont-Blanc" class="creation-image">
                             <div class="creation-alt"></div>
                         </div>
                     </div>
