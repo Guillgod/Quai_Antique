@@ -56,7 +56,7 @@ $restaurantInfos = $infoController->getAllInfos();
             <li><a href="#">Mentions légales</a></li>
             <li><a href="#">Politique de confidentialité</a></li>
         </ul>
-        <p class="footer-copy">&copy; 2023 Le Quai Antique. Tous droits réservés.</p>
+        <p class="footer-copy">&copy; 2025 Le Quai Antique. Tous droits réservés.</p>
     </div>
     </footer>
     </body>

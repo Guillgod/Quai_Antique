@@ -14,7 +14,7 @@ $gallery_photos = $galleryController->getAllPhotos();
 <body>
 <?php require_once 'header.php';?>
 <section class="fond4">
-    <H1>Galerie</H1>
+    <h1>Galerie</h1>
 </section>
 <section class="container2">
     <div class="container-content2">

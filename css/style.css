@@ -1149,7 +1149,7 @@ input[type="radio"] {
 /* Style du texte centré, améliore la lisibilité */
 .fond4 h1 {
     color: #bf902b;
-    font-size: 3em;
+    font-size: 4em;
     letter-spacing: 2px;
     text-shadow: 0 4px 20px rgba(0,0,0,0.7), 0 1px 1px #000;
     margin: 0;
